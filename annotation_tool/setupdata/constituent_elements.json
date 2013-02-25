@@ -1,0 +1,53 @@
+[
+ {
+   "model": "annotation_tool.constituentelements",
+   "pk": 1,
+   "fields": {
+       "parent_instance" : 9,
+       "parent_inst_name" : "9-Use_computer",
+       "fe_name" : "Agent",
+       "fe" : 3, 
+       "child_instance" : 8,
+       "child_inst_name" : "8-Woman"
+    }
+  },
+
+ {
+   "model": "annotation_tool.constituentelements",
+   "pk": 2,
+   "fields": {
+       "parent_instance" : 9,
+       "parent_inst_name" : "9-Use_computer",
+       "fe_name" : "Computer",
+       "fe" : 4, 
+       "child_instance" : 10,
+       "child_inst_name" : "10-Desktop_computer"
+    }
+  },
+
+   {
+   "model": "annotation_tool.constituentelements",
+   "pk": 3,
+   "fields": {
+       "parent_instance" : 9,
+       "parent_inst_name" : "9-Use_computer",
+       "fe_name" : "Chair",
+       "fe" : 20, 
+       "child_instance" : 11,
+       "child_inst_name" : "11-Chair"
+    }
+  },
+
+   {
+   "model": "annotation_tool.constituentelements",
+   "pk": 4,
+   "fields": {
+       "parent_instance" : 9,
+       "parent_inst_name" : "9-Use_computer",
+       "fe_name" : "Desk",
+       "fe" : 19, 
+       "child_instance" : 12,
+       "child_inst_name" : "12-Desk"
+    }
+  }
+  ]

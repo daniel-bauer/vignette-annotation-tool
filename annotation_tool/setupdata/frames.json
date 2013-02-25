@@ -1,0 +1,139 @@
+[
+ {
+   "model": "annotation_tool.frames",
+   "pk": 1,
+   "fields": {
+       "name": "Using",
+       "frame_type": "FRAMENET",
+       "has_lexicalization": 1,
+       "framenet_id": 234234,
+       "timestamp": 123,
+       "semiotic_status": "LITERAL",
+       "annotator": 19
+       }
+ },
+  
+ {
+   "model": "annotation_tool.frames",
+   "pk": 2,
+   "fields": {
+       "name": "Use_computer",
+       "frame_type": "FRAMENET",
+       "has_lexicalization": 1,
+       "framenet_id": 234234,
+       "timestamp": 123,
+       "semiotic_status": "LITERAL",
+       "annotator": 19
+       }
+ },
+
+ {
+   "model": "annotation_tool.frames",
+   "pk": 3,
+   "fields": {
+       "name": "Sit_on_seat",
+       "frame_type": "PRIMITIVE",
+       "has_lexicalization": 0,
+       "framenet_id": 34,	
+       "timestamp": 23,
+       "annotator": 20
+       }
+ },
+
+ {
+   "model": "annotation_tool.frames",
+    "pk": 4,
+    "fields": {
+       "name": "Use_machine",
+       "frame_type": "PRIMITIVE",
+       "has_lexicalization": 0,
+       "framenet_id": 123,	       
+       "timestamp": 234,
+       "annotator": 20
+       }
+  },
+
+   {
+   "model": "annotation_tool.frames",
+    "pk": 5,
+    "fields": {
+       "name": "Posture",
+       "frame_type": "PRIMITIVE",
+       "has_lexicalization": 1,
+       "framenet_id": null,	       
+       "timestamp": 2348,
+       "annotator": 20
+       }
+  },
+
+   {
+   "model": "annotation_tool.frames",
+    "pk": 6,
+    "fields": {
+       "name": "On",
+       "frame_type": "PRIMITIVE",
+       "has_lexicalization": 0,
+       "framenet_id": null,       
+       "timestamp": 12348,
+       "annotator": 20
+       }
+  },
+
+  {
+   "model": "annotation_tool.frames",
+    "pk": 7,
+    "fields": {
+       "name": "Woman",
+       "frame_type": "VIGNETTE",
+       "has_lexicalization": 1,
+       "framenet_id": null,
+       "timestamp": 1208,
+       "semiotic_status": "LITERAL",
+       "annotator": 19
+       }
+  },
+
+  {
+   "model": "annotation_tool.frames",
+    "pk": 8,
+    "fields": {
+       "name": "Chair",
+       "frame_type": "VIGNETTE",
+       "has_lexicalization": 1,
+       "framenet_id": null,	       
+       "timestamp": 112315,
+       "semiotic_status": "LITERAL",
+       "annotator": 19
+       }
+  },
+
+  {
+   "model": "annotation_tool.frames",
+    "pk": 9,
+    "fields": {
+       "name": "Desktop_computer",
+       "frame_type": "VIGNETTE",
+       "has_lexicalization": 1,
+       "framenet_id": null,	       
+       "timestamp": 112315,
+       "semiotic_status": "LITERAL",
+       "annotator": 19
+       }
+  },
+
+  {
+   "model": "annotation_tool.frames",
+    "pk": 10,
+    "fields": {
+       "name": "Desk",
+       "frame_type": "VIGNETTE",
+       "has_lexicalization": 1,
+       "timestamp": 112315,
+       "framenet_id": null,	       
+       "semiotic_status": "LITERAL",
+       "annotator": 19
+       }
+  }
+  
+]
+

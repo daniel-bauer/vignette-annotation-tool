@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block leftpane %}
+ <div class="left border-css" align="left">
+     <div class="title-border"> Corpus </div>
+     <div class="image-description-head"> <input type="Submit" value=">>" onClick="selectNextRow(event);"/><input type="Submit" value="<<" onClick="selectPrevRow(event);"/> </div>
+     <div class="image-description">
+      <table id="file-display">
+	<tbody></tbody>
+      </table>
+    </div>
+{% endblock %}

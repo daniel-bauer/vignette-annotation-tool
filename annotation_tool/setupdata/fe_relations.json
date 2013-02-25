@@ -1,0 +1,113 @@
+[
+ {
+   "model": "annotation_tool.ferelations",
+   "pk": 1,
+   "fields": {
+      "rel_type": "ISA",
+      "parent_frame": 1,
+      "child_frame" : 2,
+      "parent_fe": 1,
+      "child_fe": 3,
+      "parent_fe_name": "Agent",
+      "child_fe_name" : "Agent"
+   }
+  },
+
+ {
+   "model": "annotation_tool.ferelations",
+   "pk": 2,
+   "fields": {
+      "rel_type": "ISA",
+      "parent_frame": 1,
+      "child_frame" : 2,
+      "parent_fe": 2,
+      "child_fe": 4,
+      "parent_fe_name": "Instrument",
+      "child_fe_name" : "Computer"
+   }
+ },
+
+ {
+   "model": "annotation_tool.ferelations",
+   "pk": 3,
+   "fields": {
+      "rel_type": "SUBFRAME",
+      "parent_frame": 2,
+      "child_frame" : 4,
+      "parent_fe": 3,
+      "child_fe": 7,
+      "parent_fe_name": "Agent",
+      "child_fe_name" : "Agent"
+   }
+ },
+
+  {
+   "model": "annotation_tool.ferelations",
+   "pk": 4,
+   "fields": {
+      "rel_type": "SUBFRAME",
+      "parent_frame": 2,
+      "child_frame" : 4,
+      "parent_fe": 4,
+      "child_fe": 8,
+      "parent_fe_name": "Computer",
+      "child_fe_name" : "Machine"
+   }
+ },
+
+ {
+   "model": "annotation_tool.ferelations",
+   "pk": 5,
+   "fields": {
+      "rel_type": "SUBFRAME",
+      "parent_frame": 2,
+      "child_frame" : 6,
+      "parent_fe": 4,
+      "child_fe": 12,
+      "parent_fe_name": "Computer",
+      "child_fe_name" : "Figure"
+    }
+ },
+
+ {
+   "model": "annotation_tool.ferelations",
+   "pk": 6,
+   "fields": {
+      "rel_type": "SUBFRAME",
+      "parent_frame": 2,
+      "child_frame" : 6,
+      "parent_fe": 19,
+      "child_fe": 11,
+      "parent_fe_name": "Desk",
+      "child_fe_name" : "Ground"
+    }
+ },
+
+ {
+   "model": "annotation_tool.ferelations",
+   "pk": 7,
+   "fields": {
+      "rel_type": "SUBFRAME",
+      "parent_frame": 2,
+      "child_frame" : 3,
+      "parent_fe": 3,
+      "child_fe": 5,
+      "parent_fe_name": "Agent",
+      "child_fe_name" : "Agent"
+    }
+ },
+
+ {
+   "model": "annotation_tool.ferelations",
+   "pk": 8,
+   "fields": {
+      "rel_type": "SUBFRAME",
+      "parent_frame": 2,
+      "child_frame" : 3,
+      "parent_fe": 20,
+      "child_fe": 6,
+      "parent_fe_name": "Chair",
+      "child_fe_name" : "Support_fixture"
+    }
+ }
+]

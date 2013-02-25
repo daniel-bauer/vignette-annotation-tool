@@ -1,0 +1,88 @@
+<!-- DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN" -->
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+    <title>Annotation Tool </title>
+    <link rel="stylesheet" href="http://127.0.0.1:8000/media/test.css"></link>
+    <script type="text/javascript" src="http://127.0.0.1:8000/media/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="http://127.0.0.1:8000/media/raphael.js"></script>
+    <script type="text/javascript" src="http://127.0.0.1:8000/media/dracula_graffle.js"></script>
+    	<script type="text/javascript" src="http://127.0.0.1:8000/media/dracula_algorithms.js"></script>
+    <script type="text/javascript" src="http://127.0.0.1:8000/media/dracula_graph.js"></script>
+    <script type="text/javascript">
+      var scene_id=1;
+      var corpus_id=1;
+    </script>
+    <script type="text/javascript" src="http://127.0.0.1:8000/media/test.js"></script>
+    <script type="text/javascript" src="http://127.0.0.1:8000/media/createGraph.js"></script>
+  </head>
+  <body>
+    <div class="container">
+       <div class="left border-css" align="left">
+	<div class="title-border"> Corpus </div>
+	<div class="image-description-head"> <input type="Submit" value="&gt;" onClick="selectNextRow(event);"/> <input type="Submit" value="&gt;&gt;" onClick="selectNextScene(event);"/> <input type="Submit" value="&lt;" onClick="selectPrevRow(event);"/> <input type="Submit" value="&lt;&lt;" onClick="selectPrevScene(event);"/></div>
+	<div class="image-description">
+	  <table id="file-display">
+	    <tbody></tbody>
+	  </table>
+	</div>
+		<div class="instances-header title-border"> Instances </div>
+	<div class="instances-box border-css">
+	  <select id="instances-name" width="auto" height="90%"/>
+	  <input type="submit" value="new instance" onClick="createNewInstance();"/>
+	</div>
+	<div class="textbox-header title-border"> TextBox </div>
+	<div class="text-box border-css">
+	  <input type="text" class="word" style="width:60%"/> <input type="text" class="word-pos" style="width:35%"/> <br/>
+	  <input type="text" class="word" style="width:60%"/> <input type="text" class="word-pos" style="width:35%"/> <br/>
+	  <input type="text" class="word" style="width:60%"/> <input type="text" class="word-pos" style="width:35%"/> <br/>
+	  <input type="submit" value="add selection" onClick="addTextbox(event)"/>
+	  <input type="submit" value="save selection" onClick="saveInstances(event)"/>
+	</div>
+      </div>
+       
+      <div class="centre">
+	<textarea id="display-sentence"></textarea>
+	<div id="canvas"></div>
+<!--	
+	<div class="instances-header title-border"> Instances </div>
+	<div class="instances-box border-css">
+	  <select id="instances-name" width="auto" height="90%"/>
+	  <input type="submit" value="new instance" onClick="createNewInstance();"/>
+	</div>
+	<div class="textbox-header title-border"> TextBox </div>
+	<div class="text-box border-css">
+	  <input type="text" class="word" style="width:60%"/> <input type="text" class="word-pos" style="width:35%"/> <br/>
+	  <input type="text" class="word" style="width:60%"/> <input type="text" class="word-pos" style="width:35%"/> <br/>
+	  <input type="text" class="word" style="width:60%"/> <input type="text" class="word-pos" style="width:35%"/> <br/>
+	  <input type="submit" value="add selection" onClick="addTextbox(event);"/>
+	  <input type="submit" value="save selection" onClick="saveInstances(event);"/>
+	</div>
+-->	
+      </div>
+   <div class="right border-css">
+     <div class="title-border">Frame Structure</div>
+     <div class="frame-structure-body border-css">
+       <label for="instance" class="instance_details" style="border: 1px solid #000;">Instance : i5</label> <input type="submit" value="delete"/> <br/>
+       <br/>
+       Frame : <input type="text" class="frame-name" style="width:45%"/> <input type="submit" value="save type"/> <br/>
+   <label for="saved" class="is-saved"></label> <input type="submit" value="up"/> view <input type="submit" value="" style="width:10px"/>
+     </div>
+     <div class="title-border"> Frame Elements </div>
+     <div class="frame-elements-body border-css">
+       <input type"text" class="frame-elements-name" style="width:50%"> <select class="frame-element-instances"></select> lexical <input type="checkbox" class="lexical-checkbox" style="width:3px"/> <br/>
+      <input type"text" class="frame-elements-name" style="width:50%"> <select class="frame-element-instances"></select> lexical <input type="checkbox" class="lexical-checkbox" style="width:3px"/> <br/>
+       <input type="submit" value="add empty" onClick="addNewFrameElement();"/>
+     </div>
+     <div class="title-border"> Inherits From </div>
+     <div class="inherits-from-body border-css">
+     </div>
+     <div class="title-border"> Subframe </div>
+     <div class="subframe-body">
+     </div>
+     <div class="subframe-buttons">
+      <input type="submit" value="add subframe" onClick="window.open('','blah','height=300','width=400');"/> <input type="submit" value="view all" onClick="viewAllSubFrames();"/> <input type="submit" value="hide all" onClick="hideAllSubFrames();"/>  
+     </div>
+   </div>
+  </body>
+</html>

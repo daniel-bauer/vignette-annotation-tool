@@ -1,0 +1,10 @@
+.divider{
+    width:35px;
+    height:auto;
+    display:inline-block;
+}
+   
+#instances-name{
+    height:100px;
+    overflow:scroll;
+}

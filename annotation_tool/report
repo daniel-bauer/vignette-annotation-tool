@@ -1,0 +1,42 @@
+Annotation Tool
+
+Why this tool:
+    The annotation tool is used to annotate the sentences into its corresponding frames and visualize it. A graph is created from the list of frames belonging to a scene showing how they are related. Each frame can further be decomposed to its subframes.
+
+Overview of tool:
+    A corpus consists of various scenes and each scene inturn comprises of many sentences. Every scene is annotated with certain instances of frames. One or more setences in a scene can consist of a span of words corresponding to an instance. A frame can further be decomposed to subframes and can inherit from other frames. This relationship is incorporated in frame_relations table. The arguments taken by the frame are represented as frame elements. The relationship between frame elements is included in fe_relations table.
+
+    On the left side of the tool, the user can see the sentences in a scene. He can navigate to the next sentence by clicking on the ">" button. He can navigate to the next scene by clicking on ">>" button. Similarly he can go back to the previous sentence and scene. The instances drop down consists of instances in a scene. The text corresponding to an instance and the word span is displayed in the text section.
+
+    On clicking on a sentence, the sentence appears in the textbox in the middle section. The user can select the text span he wants to annotate and click on "new instance" button. A pop up window opens that displays the word and the existing frames from which the required frame can be chosen.
+
+    The graph helps in visualizing the relationship between various instances. It is created from the constituent_elements that denotes the relationship. On clicking on any node in the graph, the node is replaced by the corresponding subframes that comprise the frame of the current instance. The viewall and hideall button for the subframe section of the graph also aids in viewing or hiding the decomposition.
+
+    The right side of the tool displays the various details of the frame of an instance.
+
+Overview of code:
+  Basics of Django:
+    The code is written in django. Django uses MVC framework. Every table in the database is represented as a model. The columns in the table are the attributes of the class. The view has the methods to manipulate these models and return the required result back to the server. The files included in template comprise of the html of the tool. The mapping between the url in the browser and the corresponding method in the view is given in urls.py. The database and other settings is given in settings.py.
+
+ Javascript:
+     Each button in the tool has a method in javascript which then calls the relevant method in the view through ajax. The sceneId, sentenceId and corpusId are passed as arguments to the file.
+ The graph is created using a js library called draculanet. The methods to create it are in createGraph.js file. It gets the adjacency list from the view, created node for each instance and adds the edges to related instances. It further adds click property to each node to incorporate the decomposition feature.
+
+Things to be done:
+    1. The instance table is designed such that each instance can take only 1 word and span. Adding new text using "add selection" creates a new instance with that text span. This has to be modified by changing the design of the table.
+    2. Currently, a new instance can be created using only existing frames. This feature needs to be implemented. 
+    
+
+Instruction to run the current version:
+    To run the application, we need the data setup.
+    1. To set up all the tables, go to myproject and run "python manage.py syncdb"
+    2. To populate the tables with data, run "python manage.py loaddata setupdata/<table_name>.json which will populate the corresponding table.
+    3. After having populated the tables, run "python manage.py runserver" to fireup the server.
+    4. Access "http://127.0.0.1:8000/display/" in firefox to view the tool.
+
+
+Why are certain things the way they are:
+    All the tables need to be in the same database as Django doesn't currently provide any support for foreign key or many-to-many relationships spanning multiple databases. 
+    
+  
+ 

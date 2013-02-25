@@ -1,0 +1,9 @@
+[
+ {
+   "model": "annotation_tool.scene",
+   "pk": 1,
+   "fields": {
+     "name": "Ordering pet food",
+     "corpus" : 1
+     }
+ }]    

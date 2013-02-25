@@ -1,0 +1,8 @@
+[
+ {
+   "model": "annotation_tool.corpus",
+   "pk": 1,
+   "fields": {
+     "name": "Pet food"
+     }
+ }]    

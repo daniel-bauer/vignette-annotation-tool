@@ -1,0 +1,38 @@
+[
+ {
+   "model": "annotation_tool.sentence",
+   "pk": 1,
+   "fields": {
+     "text" : "A girl is sitting on a chair and using the computer .",
+     "scene" : 1,
+     "corpus" : 1,
+     "pos" : "DT NN AUX VBZ P DT NN CC VBZ DT NN PUN"
+     }
+  },
+
+  {
+   "model": "annotation_tool.sentence",
+   "pk": 2,
+   "fields": {
+     "text" : "Behind her a cat and a dog are on the floor .",
+     "scene" : 1,
+     "corpus" : 1,
+     "pos" : "PRP PRP DT NN CC DT NN AUX P DT NN PUN"
+     }
+  },
+
+  {
+   "model": "annotation_tool.sentence",
+   "pk": 3,
+   "fields": {
+     "text" : "The dog is watching the girl .",
+     "scene" : 1,
+     "corpus" : 1,
+     "pos" : "DT NN AUX VBZ DT NN PUN"
+     }
+  }
+]
+
+
+
+

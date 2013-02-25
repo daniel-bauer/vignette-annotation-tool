@@ -1,0 +1,182 @@
+.left
+{
+position:absolute;
+top:5%;
+height:90%;
+width:27%;
+overflow:auto;
+}
+
+.border-css
+{
+border-style: solid;
+border-width: 2px;
+}
+
+.image-description
+{
+ overflow:auto;
+ padding-left:2%;
+ overflow:auto;
+}
+
+.right
+{
+position:absolute;
+top:5%;
+width:24%;
+height:90%;
+margin-left:75%;
+background-color:blue;
+}
+
+.centre
+{
+position:absolute;
+top:5%;
+left:26%;
+height:88%;
+width:49%;
+text-align: center;
+padding-top:1%;
+padding-left:1%;
+padding-bottom:2%;
+}
+
+.frame-structure-body
+{
+height:15%;
+overflow:auto;
+}
+
+.subframe-body
+{
+height:25%;
+overflow:auto;
+padding-top:2%;
+padding-left:2%;
+}
+
+.subframe-buttons
+{
+height:5%;
+overflow:auto;
+padding-top:2%;
+padding-left:2%;
+text-align: center;
+}
+
+.frame-elements-body
+{
+height:20%;
+padding-top:2%;
+padding-left:2%;
+overflow : auto;
+}
+
+.instances-header
+{
+ height:5%;
+ position:absolute;
+ bottom:34%;
+ width:40%;
+ left: 2%;
+ padding-left:1%;
+}
+
+.textbox-header
+{
+ height:5%;
+ position:absolute;
+ bottom:34%;
+ width:49%;
+ left: 47%;
+ padding-left:1%;
+}
+
+.instances-box
+{
+height:30%;
+padding-bottom:1%;
+position: absolute;
+width:40%;
+bottom:2%;
+left:2%;
+overflow:auto;
+padding-left:1%;
+}
+
+.text-box
+{
+height:30%;
+padding-bottom:2%;
+position: absolute;
+width:49%;
+bottom:2%;
+left:47%;
+overflow:auto;
+padding-left:1%;
+}
+
+.inherits-from-body
+{
+height:15%;
+overflow:auto;
+}
+
+.toolbar
+{
+position:absolute;
+top:0;
+left:0;
+height:4%;
+width:100%;
+background-color:red;
+overflow : auto;
+}
+
+#canvas
+{
+height: 550px;
+width: 550px;
+position:absolute;
+top:8%;
+left:10%;
+overflow:auto;
+}
+
+.title-border 
+{
+border-style:solid;
+border-width:1px;
+background-color:grey;
+text-align:center;
+}
+
+.image-description-head 
+{
+border-style:solid;
+border-width:1px;
+text-align:center;
+}
+
+.body
+{
+background-color:fffff;
+}
+
+#display-sentence
+{
+width: 600px;
+height:30px;
+overflow : auto;    
+}
+
+.row-highlight
+{
+ background-color:grey;
+}
+
+.text-indent{
+ text-indent: 2em;
+}

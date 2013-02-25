@@ -1,0 +1,239 @@
+[
+ {
+   "model": "annotation_tool.frameelements",
+   "pk": 1,
+   "fields": {
+      "frame" : 1,
+      "frame_name": "Using",
+      "fe_name" : "Agent",
+      "core_status": "CORE"
+   }
+ },
+
+ {
+   "model": "annotation_tool.frameelements",
+   "pk": 2,
+   "fields": {
+      "frame" : 1,
+      "frame_name": "Using",
+      "fe_name" : "Instrument",
+      "core_status": "CORE"
+   }
+
+ },
+
+ {
+   "model": "annotation_tool.frameelements",
+   "pk": 3,
+   "fields": {
+      "frame" : 2,
+      "frame_name" : "Use_computer",
+      "fe_name" : "Agent",
+      "core_status": "CORE"
+   }
+
+ },
+
+ {
+   "model": "annotation_tool.frameelements",
+   "pk": 4,
+   "fields": {
+      "frame" : 2,
+      "frame_name" : "Use_computer",
+      "fe_name" : "Computer",
+      "core_status": "CORE"
+   }
+
+ },
+
+ {
+   "model": "annotation_tool.frameelements",
+   "pk": 5,
+   "fields": {
+      "frame" : 3,
+      "frame_name": "Sit_on_seat",
+      "fe_name" : "Agent",
+      "core_status": "CORE"
+   }
+
+ },
+
+ {
+   "model": "annotation_tool.frameelements",
+   "pk": 6,
+   "fields": {
+      "frame" : 3,
+      "frame_name": "Sit_on_seat",
+      "fe_name" : "Support_fixture",
+      "core_status": "CORE"
+   }
+
+ },
+
+  {
+   "model": "annotation_tool.frameelements",
+   "pk": 7,
+   "fields": {
+      "frame" : 4,
+      "frame_name": "Use_machine",
+      "fe_name" : "Agent",
+      "core_status": "CORE"
+   }
+
+ },
+
+  {
+   "model": "annotation_tool.frameelements",
+   "pk": 8,
+   "fields": {
+      "frame" : 4,
+      "frame_name": "Use_machine",
+      "fe_name" : "Machine",
+      "core_status": "CORE"
+   }
+
+ },
+
+  {
+   "model": "annotation_tool.frameelements",
+   "pk": 9,
+   "fields": {
+      "frame" : 5,
+      "frame_name": "Posture",
+      "fe_name" : "Agent",
+      "core_status": "CORE"
+   }
+
+ },
+
+ {
+   "model": "annotation_tool.frameelements",
+   "pk": 10,
+   "fields": {
+      "frame" : 5,
+      "frame_name": "Posture",
+      "fe_name" : "Location",
+      "core_status": "CORE"
+   }
+
+ },
+
+ {
+   "model": "annotation_tool.frameelements",
+   "pk": 11,
+   "fields": {
+      "frame" : 6,
+      "frame_name": "On",
+      "fe_name" : "Figure",
+      "core_status": "CORE"
+   }
+
+ },
+
+ {
+   "model": "annotation_tool.frameelements",
+   "pk": 12,
+   "fields": {
+      "frame" : 6,
+      "frame_name": "On",
+      "fe_name" : "Ground",
+      "core_status": "CORE"
+   }
+
+ },
+
+ {
+   "model": "annotation_tool.frameelements",
+   "pk": 13,
+   "fields": {
+      "frame" : 1,
+      "frame_name": "Using",
+      "fe_name" : "Self",
+      "core_status": "CORE"
+   }
+
+ },
+
+ {
+   "model": "annotation_tool.frameelements",
+   "pk": 14,
+   "fields": {
+      "frame" : 2,
+      "frame_name": "Use_computer",
+      "fe_name" : "Self",
+      "core_status": "CORE"
+   }
+
+ },
+
+ {
+   "model": "annotation_tool.frameelements",
+   "pk": 15,
+   "fields": {
+      "frame" : 3,
+      "frame_name": "Sit_on_seat",
+      "fe_name" : "Self",
+      "core_status": "CORE"
+   }
+
+ },
+
+ {
+   "model": "annotation_tool.frameelements",
+   "pk": 16,
+   "fields": {
+      "frame" : 4,
+      "frame_name": "Use_machine",
+      "fe_name" : "Self",
+      "core_status": "CORE"
+   }
+
+ },
+
+ {
+   "model": "annotation_tool.frameelements",
+   "pk": 17,
+   "fields": {
+      "frame" : 5,
+      "frame_name": "Posture",
+      "fe_name" : "Self",
+      "core_status": "CORE"
+   }
+
+ },
+ 
+ {
+   "model": "annotation_tool.frameelements",
+   "pk": 18,
+   "fields": {
+      "frame" : 6,
+      "frame_name": "On",
+      "fe_name" : "Self",
+      "core_status": "CORE"
+   }
+
+ },
+
+ {
+   "model": "annotation_tool.frameelements",
+   "pk": 19,
+   "fields": {
+      "frame" : 2,
+      "frame_name": "Use_computer",
+      "fe_name" : "Desk",
+      "core_status": "CORE"
+   }
+
+ },
+
+ {
+   "model": "annotation_tool.frameelements",
+   "pk": 20,
+   "fields": {
+      "frame" : 2,
+      "frame_name": "Use_computer",
+      "fe_name" : "Chair",
+      "core_status" : "CORE"
+    }
+ }
+]

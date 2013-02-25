@@ -1,0 +1,13 @@
+[
+ {
+   "model": "annotation_tool.constituentelements",
+   "pk": 1,
+   "fields": {
+       "parent_instance" : 4,
+       "parent_inst_name" : "4-Posture",
+       "child_instance" : 1,
+       "child_inst_name" : "1-Woman",
+       "fe" : 1,
+       "fe_name" : "Agent"
+    }
+  }]
