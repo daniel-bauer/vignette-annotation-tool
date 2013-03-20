@@ -1,33 +1,24 @@
 <html>
-<head>
-  <title> nonsense </title>
-    <link rel="stylesheet" href="http://127.0.0.1:8000/media/new-instance.css"></link>
-     <script type="text/javascript" src="http://127.0.0.1:8000/media/jquery-1.4.2.min.js"></script>
-    <script type="text/javascript">
-      var word = '{{word}}';
-      var wordPosition = '{{word_position}}';
-      var sceneId='{{scene_id}}';
-      var corpusId='{{corpus_id}}';
-      var sentenceId='{{sentence_id}}';
-    </script>
-    <script type="text/javascript" src="http://127.0.0.1:8000/media/jquery-1.4.2.min.js"></script>
-    <script type="text/javascript" src="http://127.0.0.1:8000/media/newInstance.js"></script>
-</head>
-<body>
-   <input type="text" class="word-text-box"/>
-   <div class="divider"></div>
-   <select id="frame-names"/>
-   <br/>
-   <div class="divider"></div>
-   <input type="submit" value="createInstance" onClick="createInstance();"/>
-   <!--
-   <br/>
-   <select multiple id="instances-name"/>
-   <select id="relationship">
-     <option value="Parent">Parent</option>
-     <option value="Child">Child</option>
-   </select>
-   <input type="submit" value="relateInstances" onClick="relateInstances();"/>
-   -->
-   </body>
+    <head>
+        <title> nonsense </title>
+        <link rel="stylesheet" href="http://127.0.0.1:8000/media/new-instance.css"></link>
+        <script type="text/javascript">
+            var word = '{{word}}';
+            var wordPosition = '{{word_position}}';
+            var sceneId='{{scene_id}}';
+            var corpusId='{{corpus_id}}';
+            var sentenceId='{{sentence_id}}';
+        </script>
+
+        <script type="text/javascript" src="http://127.0.0.1:8000/media/jquery-1.8.2.min.js"></script>
+        <script type="text/javascript" src="http://127.0.0.1:8000/media/newInstance.js"></script>
+    </head>
+    <body>
+        <h1></h1>
+        <div id="frame-select-area">
+            <ul id="frame-list"></ul>
+            <input type="submit" value="Use frame" onClick="createInstance();"/>
+            <input type="submit" value="Extend frame" onClick="createInstance();"/>
+        </div>
+    </body>
 </html>
