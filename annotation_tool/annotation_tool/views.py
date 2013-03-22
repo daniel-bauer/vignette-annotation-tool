@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.template.loader import render_to_string
 from models import *
 from django.http import HttpResponse
+from django.core import serializers
 import json
 import pprint
 import pygraphviz as pgv
@@ -165,6 +166,13 @@ def create_frameelements(request):
    FrameElements.create(frame_name,fe_name,core_status,framenet_id)
    return HttpResponse("SUCCESS")
 
+# Retrieve frame search data from server
+def search(searchType, query):
+   results = []
+   if(searchType == 'name'):
+       results = Frames.objects.filter(name__icontains=query)
+   return results
+
 #to open a new window where the new instance can be created
 def new_instances(request):
    scene_id = request.GET.get('scene_id')
@@ -172,8 +180,19 @@ def new_instances(request):
    sentence_id = request.GET.get('sentence_id')
    word = request.GET.get('word')
    word_position = request.GET.get('word_position')
-   return render_to_response('newInstance.html',{'scene_id':scene_id,'corpus_id':corpus_id,'sentence_id':sentence_id,'word':word,'word_position':word_position})
-   
+   searchType = request.GET.get('search-type')
+   query = request.GET.get('query')
+   results = []
+   if(searchType == None or query == ''):
+       results = Frames.objects.all();
+       for result in results:
+           print(result.name)
+   else:
+       results = search(searchType, query)
+
+   results_json = serializers.serialize('json', results[:100])
+    
+   return render_to_response('newInstance.html',{'scene_id':scene_id,'corpus_id':corpus_id,'sentence_id':sentence_id,'word':word,'word_position':word_position,'results':results_json})
    
 class AnnotationToolView(TemplateView):
    template_name ="base.html"

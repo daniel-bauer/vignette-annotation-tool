@@ -6,28 +6,55 @@ h1 {
     font-weight: normal;
 }
 
-#frame-select-area {
-    margin: 1em 10em;
-    border: .1em;
-    border-color: #000000;
-    border-style: solid;
+.input {
+    margin: 0 1em;
+    font-size: .75em;
+    font-family: Helvetica;
 }
 
 #frame-list {
-    height: 20em;
+    margin: 0 15em;
+    border: 1px;
+    border-color: #000000;
+    border-style: solid;
+    height: 22em;
     overflow: auto;
     text-align: left;
     list-style-type: none;
     padding: 0;
-    margin-left: 2em;
+}
+
+.frame {
+    padding: .5em;
+    border-top: 1px;
+    border-bottom: 0;
+    border-left: 0;
+    border-right: 0;
+    border-color: #000000;
+    border-style: dashed;
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.topframe {
+    border: 0;
+}
+
+.frame-text {
+    margin-left: 1em;
 }
 
 .selected {
     background: yellow;
 }
 
-input {
-    margin: 0 1em;
+.create {
+    margin: 1em;
     margin-bottom: 1em;
     width: 8em;
 }
