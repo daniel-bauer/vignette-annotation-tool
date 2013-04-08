@@ -8,6 +8,7 @@ $(document).ready(function() {
     }
     $('h1').html(header);
 
+    csrfProtect();
     populateFrameList();
     toggleSelectedFrame();
 });
@@ -18,7 +19,7 @@ function populateFrameList() {
     $.each(results, function(index,value) {
         var text = '<span class=frame-text>' + value.fields.name + '</span>';
 
-        // Give it topframe class if it is the first item
+        // Give frame topframe class if it is the first item
         var fclass = '"';
         if(i == 0 ) {
             fclass = ' topframe"';
@@ -54,19 +55,82 @@ function toggleSelectedFrame() {
     });
 }
 
-function createInstance() {
-    var frameName = $('.selected').attr('id');
-    var request_parameters = '?scene_id=' + sceneId +'&corpus_id=' + corpusId + '&word=' + word + '&word_position=' + wordPosition +  '&name=' + frameName + '&sentence_id=' + sentenceId;
+function createInstance(frameName) {
+
+    if(frameName == null) {
+        frameName = $('.selected').attr('id');
+    }
+
     jQuery.ajax({
-        url: 'http://127.0.0.1:8000/create_instances/' + encodeURI(request_parameters),
-        type: 'get',
-        dataType: 'text',
-        success:function(data) {	
-            alert(data);
+        url: '/create_instances/',
+        type: 'POST',
+        data: {
+            sceneId: sceneId,
+            corpusId: corpusId,
+            word: word,
+            wordPosition: wordPosition,
+            name: frameName,
+            sentenceId: sentenceId
         },
-        error:function(jqXHR) {
-            alert(jqXHR.status);
-            alert(jqXHR.responseText);
+        dataType: 'text',
+        success:function(data) {
+            alert(data + '\nThis window will now close');
+            window.close()
+        },
+        error:function(jqXHR, textStatus, errorThrown) {
+            alert(jqXHR.status + ', ' + textStatus + ', ' + errorThrown);
+        }
+    });
+}
+
+function createFrame() {
+    parentFrameName = $('.selected').attr('id');
+    frameName = $('input[name="frame_name"]').attr('value');
+
+    hasLexicalization = 1;
+    if(word == '')
+        hasLexicalization = 0;
+   
+    // Create frame 
+    ajaxRequest('/create_frame/', 'POST', false,
+            {
+                name: frameName,
+                frameType: 'USER_MADE',
+                hasLexicalization: hasLexicalization
+            });
+
+    // Create frame relation
+    ajaxRequest('/create_framerelation/', 'POST', false,
+            {
+                parentFrameName: parentFrameName,
+                frameName: frameName,
+                relationType: 'ISA'
+            });
+
+    // Create frame elements and fe relationships
+    ajaxRequest('/create_frameelements/', 'POST', true, 
+            {
+                frameName: frameName,
+                parentFrameName: parentFrameName
+            });
+}
+
+// ajax request helper function
+var ajaxRequest = function(url, type, success, data) {
+    var successFunc = function(data) {}
+    if(success) {
+        successFunc = function(data) {
+            alert('Successfully created new frame.\nThis window will now close.');
+            window.close();
+        }
+    }
+    jQuery.ajax({
+        url: url,
+        type: type,
+        data: data,
+        success: successFunc,
+        error:function(jqXHR, textStatus, errorThrown) {
+            alert(url + ', ' + jqXHR.status + ', ' + textStatus + ', ' + errorThrown);
         }
     });
 }

@@ -1,5 +1,6 @@
 from django.shortcuts import render_to_response
 from django.views.generic import TemplateView
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from models import *
@@ -97,25 +98,82 @@ def get_inherits_from(request):
    inheritance_json = [{'parent_fe':frame_rel.parent_fe_name, 'child_fe':frame_rel.child_fe_name,'frame_rel_id':frame_rel.id} for frame_rel in frame_relations]
    return HttpResponse(json.dumps(inheritance_json))
 
-#creates new instances in the new window that is opened
+# Creates new instances in the new window that is opened
+@ensure_csrf_cookie
 def create_instances(request):
-   scene_id = request.GET.get('scene_id')
-   corpus_id = request.GET.get('corpus_id')
-   word = request.GET.get('word')
-   word_position = request.GET.get('word_position')
-   name = request.GET.get('name')
-   sentence_id = request.GET.get('sentence_id')
-   try:
-    Instances.create(name,word,word_position,int(scene_id),int(sentence_id),int(corpus_id))
-    response = HttpResponse()
-    response.content = "Successfully created instance"
-    response.status_code = 200
-    return response
-   except ValueError as e:
-     response = HttpResponse()
-     response.content = "Encountered error with " + str(e)
-     response.status_code = 500
-     return response
+    sceneId = request.POST['sceneId']
+    corpusId = request.POST['corpusId']
+    word = request.POST['word']
+    wordPosition = request.POST['wordPosition']
+    name = request.POST['name']
+    sentenceId = request.POST['sentenceId']
+    try:
+        Instances.create(name, word, wordPosition, int(sceneId), int(sentenceId), int(corpusId))
+        response = HttpResponse()
+        response.content = "Successfully created instance"
+        response.status_code = 200
+        return response
+    except ValueError as e:
+        response = HttpResponse()
+        response.content = "Encountered error with " + str(e)
+        response.status_code = 500
+        return response
+
+# Creates frame for when user inherits from old frame
+@ensure_csrf_cookie
+def create_frame(request):
+    name = request.POST['name']
+    frameType = request.POST['frameType']
+    hasLexicalization = request.POST['hasLexicalization']
+    try:
+        Frames.create(name, frameType, hasLexicalization, None, None, None, None)
+        response = HttpResponse()
+        response.content = "Successfully created frame"
+        response.status_code = 200
+        return response
+    except ValueError as e:
+        response = HttpResponse()
+        response.content = "Encountered error with " + str(e)
+        response.status_code = 500
+        return response
+
+# Creates inheritance relation when user inherints from old frame
+@ensure_csrf_cookie
+def create_framerelation(request):
+    parentFrameName = request.POST['parentFrameName']
+    frameName = request.POST['frameName']
+    relationType = request.POST['relationType']
+    try:
+        FrameRelations.create(parentFrameName, frameName, relationType)
+        response = HttpResponse()
+        response.content = "Successfully created frame relation"
+        response.status_code = 200
+        return response
+    except ValueError as e:
+        response = HttpResponse()
+        response.content = "Encountered error with " + str(e)
+        response.status_code = 500
+        return response
+
+# Creates all frame elements for inherited frame
+def create_frameelements(request):
+    frameName = request.POST['frameName']
+    parentFrameName = request.POST['parentFrameName']
+    elements = FrameElements.objects.filter(frame_name = parentFrameName);
+    for element in elements:
+        try:
+            fename = element.fe_name
+            FrameElements.create(frameName, fename, element.core_status, None)
+            FeRelations.create(fename, fename, parentFrameName, frameName, "ISA")
+            response = HttpResponse()
+            response.content = "Successfully added frame elements and relations"
+            response.status_code = 200
+            return response
+        except ValueError as e:
+            response = HttpResponse()
+            response.content = "Encountered error with " + str(e)
+            response.status_code = 500
+            return response
 
 def create_graph(request):
    scene_id = request.GET.get('scene_id')
@@ -157,15 +215,6 @@ def get_related_frames_for_selected_instance(instance_name,scene_id,corpus_id,ad
    adjacency_list_for_graph[instance_name] = adj_list_for_instance
    return adjacency_list_for_graph
 
-def create_frameelements(request):
-   frame_name = request.GET.get('frame_name')
-   fe_name = request.GET.get('fe_name')
-   core_status = request.GET.get('core_status')
-   framenet_id = request.GET.get('framenet_id')
-
-   FrameElements.create(frame_name,fe_name,core_status,framenet_id)
-   return HttpResponse("SUCCESS")
-
 # Retrieve frame search data from server
 def search(searchType, query):
    results = []
@@ -173,7 +222,7 @@ def search(searchType, query):
        results = Frames.objects.filter(name__icontains=query)
    return results
 
-#to open a new window where the new instance can be created
+# Open a new window where the new instance can be created
 def new_instances(request):
    scene_id = request.GET.get('scene_id')
    corpus_id = request.GET.get('corpus_id')
@@ -185,8 +234,6 @@ def new_instances(request):
    results = []
    if(searchType == None or query == ''):
        results = Frames.objects.all();
-       for result in results:
-           print(result.name)
    else:
        results = search(searchType, query)
 

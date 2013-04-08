@@ -16,9 +16,13 @@ urlpatterns = patterns('',
     (r'^delete_subframes/.*$', delete_subframes),
     (r'^inherits_from/.*$', get_inherits_from),
     (r'^graph/.*$', create_graph),
-    (r'^constituent_elements/.*$', get_constituentelements),              (r'^create_instances/.*$', create_instances),
+    (r'^constituent_elements/.*$', get_constituentelements),
+    (r'^create_instances/.*$', create_instances),
+    (r'^create_frame/.*$', create_frame),
+    (r'^create_framerelation/.*$', create_framerelation),
+    (r'^create_frameelements/.*$', create_frameelements),
     (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT }),
-   (r'^new_instances/.*$', new_instances),
+    (r'^new_instances/.*$', new_instances)
 
     # Examples:
     # url(r'^$', 'myproject.views.home', name='home'),

@@ -43,7 +43,7 @@ class Frames(models.Model):
     @classmethod
     def create(cls,name,frame_type,has_lexicalization,framenet_id,timestamp,semiotic_status,annotator):
        frame = cls(name=name,frame_type=frame_type,has_lexicalization=has_lexicalization,framenet_id=framenet_id,timestamp=timestamp,semiotic_status=semiotic_status,annotator=annotator)
-       return frame
+       frame.save()
 
 class Instances(models.Model):
     name = models.CharField(max_length=100)
@@ -75,11 +75,15 @@ class FrameElements(models.Model):
     @classmethod    
     def create(cls,frame_name,fe_name,core_status,framenet_id):
         frame = Frames.objects.get(name=frame_name)
+        frame_id = frame.id
         frame_name = frame_name
         fe_name = fe_name
         core_status = core_status
-        framenet_id = int(framenet_id)
-        frame_element = cls(name=name,word=word,word_position=word_position,frame=frame,scene=scene,sentence=sentence,corpus=corpus)
+        if(framenet_id != None):
+            framenet_id = int(framenet_id)
+        frame_element = cls(frame_id=frame_id,frame_name=frame_name,fe_name=fe_name,core_status=core_status,framenet_id=framenet_id)
+        frame_element.save()
+
 
 class FrameRelations(models.Model):
     relation_type = models.CharField(max_length=256)
@@ -93,6 +97,8 @@ class FrameRelations(models.Model):
         parent_frame = Frames.objects.get(name=parent_frame_name)
         child_frame = Frames.objects.get(name=child_frame_name)
         frame_relation = cls(parent_frame=parent_frame,child_frame=child_frame,parent_frame_name=parent_frame_name,child_frame_name=child_frame_name,relation_type=relation_type)
+        frame_relation.save()
+        
 
 class FeRelations(models.Model):
     rel_type = models.CharField(max_length=256)
@@ -104,12 +110,16 @@ class FeRelations(models.Model):
     child_fe_name = models.CharField(max_length=256)
 
     @classmethod    
-    def create(cls,parent_fe_name,child_fe_name,parent_frame,child_frame,rel_type):
-        parent_fe = FrameElements.objects.get(name=parent_fe_name)
-        child_fe = FrameElements.objects.get(name=child_fe_name)
-        frame_relation = cls(parent_frame=parent_frame,child_frame=child_frame,parent_fe_name=parent_fe_name,parent_fe=parent_fe,child_fe=child_fe,child_fe_name=child_fe_name,rel_type=rel_type)
-    
-        
+    def create(cls,parent_fe_name,child_fe_name,parent_frame_name,child_frame_name,rel_type):
+        parent_fe = FrameElements.objects.get(frame_name=parent_frame_name,fe_name=parent_fe_name)
+        child_fe = FrameElements.objects.get(frame_name=child_frame_name,fe_name=child_fe_name)
+        parent_frame = Frames.objects.get(name=parent_frame_name)
+        child_frame = Frames.objects.get(name=child_frame_name)
+
+        frame_relation = cls(parent_fe_name=parent_fe_name,child_fe_name=child_fe_name,parent_fe=parent_fe,child_fe=child_fe,parent_frame=parent_frame,child_frame=child_frame,rel_type=rel_type)
+
+        frame_relation.save()
+
 class ConstituentElements(models.Model):
      parent_instance = models.ForeignKey("Instances", related_name='parent')
      parent_inst_name = models.CharField(max_length=256)
