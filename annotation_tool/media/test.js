@@ -147,7 +147,7 @@ function createNewInstance(){
     var wordPosition = getPositionOfWord(word);
     var sentenceId = $('#file-display .row-highlight').index()+1;
     var requestParameters = 'corpus_id='+corpus_id+'&scene_id='+scene_id+'&sentence_id='+sentenceId+'&word='+word+'&word_position='+wordPosition ; 
-    window.open('http://127.0.0.1:8000/new_instances?'+requestParameters,'foo','height=300','width=60');
+    return window.open('http://127.0.0.1:8000/new_instances?'+requestParameters,'foo','height=300','width=60');
 }
 
 function addInstances(instances){

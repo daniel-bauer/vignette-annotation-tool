@@ -1,6 +1,6 @@
 $(document).ready(function() {
     var header = '';
-    if(word == '') {
+    if(!word || word == '') {
         header = 'Select implicitly evoked frame';
     }
     else {
@@ -16,8 +16,18 @@ $(document).ready(function() {
 function populateFrameList() {
     var frameList = $('#frame-list');
     var i = 0;
-    $.each(results, function(index,value) {
+    for(var j = 0; j < results.length; j++) {
+        var value = results[j];
+        var fes = resultFEs[j];
+
         var text = '<span class=frame-text>' + value.fields.name + '</span>';
+        var data = '<div class=data><p>';
+
+        $.each(fes, function(index, element) {
+            data = data + element.fields.fe_name + ' ';
+        })
+
+        data = data + '</p></div>';
 
         // Give frame topframe class if it is the first item
         var fclass = '"';
@@ -25,32 +35,38 @@ function populateFrameList() {
             fclass = ' topframe"';
         }
 
-        var newItem = '<li class="frame' + fclass + ' id=' +  value.fields.name + '>' + text + '</li>';
+        var newItem = '<li class="frame' + fclass + ' id=' +  value.fields.name + '>';
+        newItem = newItem + text + data + '</li>';
         frameList.append(newItem);
+        frameList.find('>:last-child .data').hide();
 
         i = 1;
-    });
+    };
 }
 
 function toggleSelectedFrame() {
     var selectedFrameID = '';
     $('#frame-list').on('click', '.frame', function() {
-        $(this).toggleClass('selected');
+        toSelect = $(this)
+        toSelect.toggleClass('selected');
         
-        var thisID = $(this).attr('id');
+        var thisID = toSelect.attr('id');
         if(selectedFrameID != '') {
             var toUnselect = $('#frame-list li#' + selectedFrameID);
             toUnselect.removeClass('selected');
+            toUnselect.find('.data').hide();
             
             if(thisID == toUnselect.attr('id')) {
                 selectedFrameID = '';
             }
             else {
                 selectedFrameID = thisID;
+                toSelect.find('.data').show();
             }
         }
         else {
             selectedFrameID = thisID;
+            toSelect.find('.data').show();
         }
     });
 }

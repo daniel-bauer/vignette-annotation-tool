@@ -36,7 +36,7 @@ class Frames(models.Model):
     frame_type = models.CharField(max_length = 10,null=True)
     has_lexicalization = models.IntegerField()
     framenet_id = models.IntegerField(null=True)
-    timestamp = models.IntegerField(null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
     semiotic_status = models.CharField(max_length = 100,null=True)
     annotator = models.IntegerField(null=True)
 
@@ -136,3 +136,39 @@ class ConstituentElements(models.Model):
         child_instance = Instances.objects.get(id=child_inst_id)
         child_inst_name = child_instance.name
         constituent_element = cls(parent_instance=parent_instance,parent_inst_name=parent_inst_name,fe_name=fe_name,fe=fe,child_instance=child_instance,child_inst_name=child_inst_name)
+
+class FrameKeyword(models.Model):
+    frame = models.ForeignKey("Frames", related_name="framekeyword")
+    frame_name = models.CharField(max_length=100)
+    keyword = models.CharField(max_length=11)
+    relation = models.CharField(max_length=11)
+    lex_unit = models.ForeignKey("LexicalUnit", related_name="keyword")
+    lex_unit_word = models.CharField(max_length=20)
+    
+    @classmethod
+    def create(cls, frame_name, keyword, relation, lex_unit_word):
+        frame = Frames.objects.get(name=frame_name)
+        frame_name = frame_name
+        keyword = keyword
+        relation = relation
+        lex_unit = LexUnits.objects.get(frame_name=frame_name, word=lex_unit_word)
+        lex_unit_word = lex_unit_word
+        framekeyword = cls(frame=frame,frame_name=frame_name,keyword=keyword,relation=relation,lex_unit=lex_unit,lex_unit_word=lex_unit_word)
+#        framekeyword.save()
+
+class LexicalUnit(models.Model):
+    frame = models.ForeignKey("Frames", related_name="lexicalunit")
+    frame_name = models.CharField(max_length=100)
+    word = models.CharField(max_length=20)
+    multiword = models.BooleanField()
+    continuous = models.BooleanField()
+
+    @classmethod
+    def create(cls, frame_name, word, multiword, continuous):
+        frame = Frames.objects.get(name=frame_name)
+        frame_name = frame_name
+        word = word
+        multiword = multiword
+        continuous = continuous
+        lexicalunit = cls(frame=frame,frame_name=frame_name,word=word,multiword=multiword,continuous=continuous)
+#        lexicalunit.save()

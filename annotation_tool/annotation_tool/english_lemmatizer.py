@@ -1,4 +1,5 @@
-MORPH_TABLE = "morph_english.roots2infl-corrected-noidents"
+import os
+MORPH_TABLE = os.path.join("annotation_tool", "morph_english.roots2infl-corrected-noidents")
 
 class EnglishLemmatizer():
     """
@@ -103,7 +104,6 @@ class EnglishLemmatizer():
             if lemma.endswith("e"):
                 return lemma+"d"
             elif lemma.endswith("ck"):
-                print "HERE"
                 return lemma[:-2]+"kked"
             elif len(lemma) > 3 and lemma[-1] in "bdgkmnpstz" and lemma[-1] != lemma[-2] and \
                 lemma[-2] in "aeiou" and lemma[-3]!=lemma[-4] and lemma[-4:-2]!="ck":

@@ -6,10 +6,14 @@
         <script type="text/javascript">
             var word = '{{word}}';
             var wordPosition = '{{word_position}}';
-            var sceneId='{{scene_id}}';
-            var corpusId='{{corpus_id}}';
-            var sentenceId='{{sentence_id}}';
+            var sceneId = '{{scene_id}}';
+            var corpusId = '{{corpus_id}}';
+            var sentenceId = '{{sentence_id}}';
             var results = {{results|safe}};
+            var resultFEs = {{resultFEs|safe}};
+            for(var i = 0; i < resultFEs.length; i++) {
+                resultFEs[i] = jQuery.parseJSON(resultFEs[i]);
+            }
         </script>
         <script type="text/javascript" src="http://127.0.0.1:8000/media/csrf.js"></script>
         <script type="text/javascript" src="http://127.0.0.1:8000/media/newInstance.js"></script>
@@ -27,7 +31,9 @@
 
             <span class="input">Search by: 
                 <select name="search-type">
+                    <option value="keyword">keyword</option>
                     <option value="name">name</option>
+                    <option value="lexicalization">lexicalization</option>
                 </select>
             </span>
 

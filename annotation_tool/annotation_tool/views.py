@@ -9,6 +9,10 @@ from django.core import serializers
 import json
 import pprint
 import pygraphviz as pgv
+from english_lemmatizer import EnglishLemmatizer
+
+lemmatizer = EnglishLemmatizer()
+lemmaTypes = ['N', 'V', 'A', 'Adv']
 
 def get_sentences(request):
    scene_id = request.GET.get('scene_id')
@@ -217,10 +221,23 @@ def get_related_frames_for_selected_instance(instance_name,scene_id,corpus_id,ad
 
 # Retrieve frame search data from server
 def search(searchType, query):
+   # TODO:
+   # will duplicates be successfully removed?
+   querylist = []
+   for ltype in lemmaTypes:
+       querylist.append(lemmatizer.process_word(query, ltype))
+
    results = []
    if(searchType == 'name'):
-       results = Frames.objects.filter(name__icontains=query)
-   return results
+       for lquery in querylist:
+           results += Frames.objects.filter(name__icontains=lquery)
+   elif(searchType == 'lexicalization'):
+       for lquery in querylist:
+           results += Frames.objects.filter(lexicalunit__word__icontains=lquery)
+   elif(searchType == 'keyword'):
+       for lquery in querylist:
+           results += Frames.objects.filter(framekeyword__keyword__icontains=lquery)
+   return list(set(results))    # delete duplicates
 
 # Open a new window where the new instance can be created
 def new_instances(request):
@@ -231,15 +248,20 @@ def new_instances(request):
    word_position = request.GET.get('word_position')
    searchType = request.GET.get('search-type')
    query = request.GET.get('query')
+
    results = []
    if(searchType == None or query == ''):
-       results = Frames.objects.all();
+       results = Frames.objects.all()[:100];
    else:
        results = search(searchType, query)
 
-   results_json = serializers.serialize('json', results[:100])
+   resultFEs = []
+   for result in results:
+       fes = FrameElements.objects.filter(frame_name=result.name)
+       resultFEs.append(serializers.serialize('json', fes))
+   results_json = serializers.serialize('json', results)
     
-   return render_to_response('newInstance.html',{'scene_id':scene_id,'corpus_id':corpus_id,'sentence_id':sentence_id,'word':word,'word_position':word_position,'results':results_json})
+   return render_to_response('newInstance.html',{'scene_id':scene_id,'corpus_id':corpus_id,'sentence_id':sentence_id,'word':word,'word_position':word_position,'results':results_json,'resultFEs':resultFEs})
    
 class AnnotationToolView(TemplateView):
    template_name ="base.html"
