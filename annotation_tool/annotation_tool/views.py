@@ -169,15 +169,16 @@ def create_frameelements(request):
             fename = element.fe_name
             FrameElements.create(frameName, fename, element.core_status, None)
             FeRelations.create(fename, fename, parentFrameName, frameName, "ISA")
-            response = HttpResponse()
-            response.content = "Successfully added frame elements and relations"
-            response.status_code = 200
-            return response
         except ValueError as e:
             response = HttpResponse()
             response.content = "Encountered error with " + str(e)
             response.status_code = 500
             return response
+
+    response = HttpResponse()
+    response.content = "Successfully added frame elements and relations"
+    response.status_code = 200
+    return response
 
 def create_graph(request):
    scene_id = request.GET.get('scene_id')
@@ -228,15 +229,25 @@ def search(searchType, query):
        querylist.append(lemmatizer.process_word(query, ltype))
 
    results = []
-   if(searchType == 'name'):
+   if searchType == 'name':
        for lquery in querylist:
            results += Frames.objects.filter(name__icontains=lquery)
-   elif(searchType == 'lexicalization'):
+   elif searchType == 'lexicalization':
        for lquery in querylist:
            results += Frames.objects.filter(lexicalunit__word__icontains=lquery)
-   elif(searchType == 'keyword'):
+   elif searchType == 'keyword':
        for lquery in querylist:
            results += Frames.objects.filter(framekeyword__keyword__icontains=lquery)
+   elif searchType == 'dobj':
+       for lquery in querylist:
+           results += Frames.objects.filter(framekeyword__keyword__icontains=lquery, framekeyword__relation='dobj')
+   elif searchType == 'nsubj':
+       for lquery in querylist:
+           results += Frames.objects.filter(framekeyword__keyword__icontains=lquery, framekeyword__relation='nsubj')
+   elif searchType == 'prep':
+       for lquery in querylist:
+           results += Frames.objects.filter(framekeyword__keyword__icontains=lquery, framekeyword__relation='prep')
+
    return list(set(results))    # delete duplicates
 
 # Open a new window where the new instance can be created
