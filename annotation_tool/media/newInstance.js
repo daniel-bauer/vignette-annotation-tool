@@ -8,6 +8,9 @@ $(document).ready(function() {
     }
     $('h1').html(header);
 
+    $(window).unload(function() {
+        opener.onPopupClose();
+    });
     csrfProtect();
     populateFrameList();
     toggleSelectedFrame();

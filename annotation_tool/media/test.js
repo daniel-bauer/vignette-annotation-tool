@@ -6,10 +6,6 @@ $(document).ready(function(){
     eventsForChangeScene();
     addTextChangedToFrameDetails();
     addTextSelectionFeature();
-    if (popup)
-        {
-            popup.onclose = function () { opener.location.reload(); }
-        }
    });
 
 function addTextSelectionFeature(){
