@@ -81,32 +81,36 @@ function getPositionOfWord(text){
     return word_position
 }
 
-//function getInstances(){
-//    jQuery.ajax({
-//       url: 'http://127.0.0.1:8000/instances/?scene_id=' + scene_id +'&corpus_id=' + corpus_id,
-//       type: 'get',
-//       dataType: 'text',
-//       success:function(data)
-//        {
-//	   instances = data.replace(/&quot;/ig,'"');       
-//	   instances = jQuery.parseJSON(instances);
-//	   addInstances(instances);
-//	}
-//    });
-//}
-
-function addLexicalization(selectedInstance){
+function getInstances(){
     jQuery.ajax({
-                url: 'http://127.0.0.1:8000/lexicalization/?scene_id=' + scene_id +'&corpus_id=' + corpus_id,
+       url: 'http://127.0.0.1:8000/instances/?scene_id=' + scene_id +'&corpus_id=' + corpus_id,
+       type: 'get',
+       dataType: 'text',
+       success:function(data)
+        {
+	   instances = data.replace(/&quot;/ig,'"');       
+	   instances = jQuery.parseJSON(instances);
+	   addInstances(instances);
+	}
+    });
+}
+
+function addLexicalization(selectedInstanceId){
+    jQuery.ajax({
+                url: 'http://127.0.0.1:8000/lexicalization/?instance_id=' + selectedInstanceId,
                 type: 'get',
                 dataType: 'text',
                 success:function(data)
                 {
-                $('#file-display > tbody:last').html("");
-                $('#file-display > tbody:last').append(data);
+                
                 }
                 });
     
+}
+
+function updateTextBox()
+{
+    alert('123');
 }
 
 function updateTextBoxesWithInstanceValues(selectedInstance,instances){
@@ -197,6 +201,8 @@ function addInstances(instances){
     });
 
     var selectedInstance = instances.instances[0].name;
+    var selectedInstanceId = instances.instances[0].instance_id;
+    addLexicalization(selectedInstanceId);
     updateTextBoxesWithInstanceValues(selectedInstance,instances.instances);
     updateFrameDetails(selectedInstance,instances.instances);
     getSubFrameDetails(selectedInstance);
