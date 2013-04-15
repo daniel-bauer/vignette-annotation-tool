@@ -182,7 +182,6 @@ function addRowHighlighting(){
     });
 }
 
-function 
 
 // opens a new window where the new instance can be created. DOES NOT ACTUALLY CREATE A NEW INSTANCE
 function createNewInstance(){
