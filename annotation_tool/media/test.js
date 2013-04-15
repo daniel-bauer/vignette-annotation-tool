@@ -3,6 +3,11 @@ $(document).ready(function(){
     $('#display-sentence').val('');
     $('.text-box').find('.word').val('');
     $('.text-box').find('.word-pos').val('');
+                  
+    window.onPopupClose = function() {
+        getInstances();
+    }
+                  
     eventsForChangeScene();
     addTextChangedToFrameDetails();
     addTextSelectionFeature();
