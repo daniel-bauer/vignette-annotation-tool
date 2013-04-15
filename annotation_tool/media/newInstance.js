@@ -129,6 +129,8 @@ function createFrame() {
                 frameName: frameName,
                 parentFrameName: parentFrameName
             });
+
+    createInstance(frameName);
 }
 
 // ajax request helper function
