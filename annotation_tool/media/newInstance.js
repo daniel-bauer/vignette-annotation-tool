@@ -124,7 +124,7 @@ function createFrame() {
             });
 
     // Create frame elements and fe relationships
-    ajaxRequest('/create_frameelements/', 'POST', true, 
+    ajaxRequest('/create_frameelements/', 'POST', false, 
             {
                 frameName: frameName,
                 parentFrameName: parentFrameName
