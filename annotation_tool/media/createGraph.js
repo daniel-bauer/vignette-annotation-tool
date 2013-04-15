@@ -2,17 +2,52 @@ $(document).ready(function(){
     getAdjacencyList(scene_id,corpus_id,'');
 });
 
-function createGraph(adjacencyList){
-    var width = 600;
-    var height = 600;
-    var g = new Graph();
-    var nodes = [];
-    g,nodes = createNodes(g, adjacencyList);
-    g = createEdges(g,adjacencyList);
+function createGraph(svgContent){
+   
+    var pos1=svgContent.indexOf("width");
+    var pos2=svgContent.indexOf("height");
+    alert('aa');
 
-    var layouter = new Graph.Layout.Spring(g);
-    renderer = new Graph.Renderer.Raphael('canvas', g, width, height);
-    addClickPropertyToNodes(nodes);
+    var pos3=svgContent.indexOf("\"",pos1+7);
+    var pos4=svgContent.indexOf("\"",pos2+8);
+   
+    var width=svgContent.substring(pos1+7,pos3-2);
+    var height=svgContent.substring(pos2+8, pos4-2);
+    alert('--'+width+'--');
+    alert(height);
+    
+    var innerWidth = document.getElementById('p_svg').offsetWidth;
+    alert(innerWidth);
+    
+    var innerHeight = document.getElementById('p_svg').offsetHeight;
+    alert(innerHeight);
+
+    
+    svgContent_new=svgContent;
+    
+    
+    if(parseInt(width) < parseInt(innerWidth)){
+        
+        svgContent_new= svgContent.substring(0,pos1+7)+innerWidth+'px'+svgContent.substring(pos3);
+        
+    }
+    
+    if(parseInt(height)<parseInt(innerHeight)*0.9){
+         var pos2=svgContent_new.indexOf("height");
+         var pos4=svgContent_new.indexOf("\"",pos2+8);
+         svgContent_new=svgContent_new.substring(0,pos2+8)+innerHeight+'px'+svgContent_new.substring(pos4);
+     
+    }
+    
+    
+    document.getElementById("p_svg").innerHTML = svgContent_new;
+    (function($){
+     $(document).ready(function () {
+                       $("svg").graphviz({statusbar: true});
+                       });
+     })(jQuery);
+
+    
 }
 
 redraw = function() {
@@ -69,7 +104,8 @@ function getAdjacencyList(scene_id,corpus_id,instance_name){
         {
 	   adjacencyList = data.replace(/&quot;/ig,'"');       
 	   adjacencyList = jQuery.parseJSON(adjacencyList);
-	    createGraph(adjacencyList);
+       createGraph(adjacencyList);
+               
 	}
     });
 }

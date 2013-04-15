@@ -27,7 +27,6 @@ top:5%;
 width:24%;
 height:90%;
 margin-left:75%;
-background-color:blue;
 }
 
 .centre
@@ -36,11 +35,22 @@ position:absolute;
 top:5%;
 left:26%;
 height:88%;
-width:49%;
-text-align: center;
+width:46%;
+/*text-align: center;*/
 padding-top:1%;
-padding-left:1%;
+padding-left:4%;
+padding-right:4%;
 padding-bottom:2%;
+}
+
+.centeredImage
+{
+overflow:scroll;
+/*text-align: top;*/
+padding-left: 20px;
+
+width:95%;
+height:90%;
 }
 
 .frame-structure-body
@@ -167,7 +177,7 @@ background-color:fffff;
 
 #display-sentence
 {
-width: 600px;
+width: 88%;
 height:30px;
 overflow : auto;    
 }

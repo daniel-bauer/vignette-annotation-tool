@@ -171,7 +171,11 @@ function addInstances(instances){
 	updateTextBoxesWithInstanceValues(selectedInstance,instances.instances);
 	updateFrameDetails(selectedInstance,instances.instances);
 	getSubFrameDetails(selectedInstance);
-	getInheritanceDetails(selectedInstance);
+                                
+    getInheritance(selectedInstance);
+                                alert('before detail')
+    getInheritanceDetails(selectedInstance);
+                                alert('after detail')
 	updateConstituentDetails(selectedInstance);
     }) 
 }
@@ -246,14 +250,14 @@ function deleteInheritance(frame_rel_id){
         success:function(data)
         {
 	  alert('deleted Inheritance');
-	    getInheritanceDetails($('#instances-name').val());
+	    getInheritance($('#instances-name').val());
 	}
     });
 }
 
 function getInheritanceDetails(selectedInstance){
     jQuery.ajax({
-        url: 'http://127.0.0.1:8000/inherits_from/?scene_id=' + scene_id +'&corpus_id=' + corpus_id +'&instance_name='+selectedInstance,
+        url: 'http://127.0.0.1:8000/inherits_element_from/?scene_id=' + scene_id +'&corpus_id=' + corpus_id +'&instance_name='+selectedInstance,
         type: 'get',
         dataType: 'text',
         success:function(data)
@@ -261,21 +265,56 @@ function getInheritanceDetails(selectedInstance){
 	    inheritance = data.replace(/&quot;/ig,'"');       
 	    inheritance = jQuery.parseJSON(inheritance);
 	    updateInheritanceDetails(selectedInstance,inheritance);
-	    addEventsToInheritance();
+	    //addEventsToInheritance();
         } 
     });
 }
 
 function updateInheritanceDetails(selectedInstance,inheritance){
-    $('.inherits-from-body').html('');
+    alert('22222');
     if(inheritance.length==0)
-	return;
-    inheritance_html = ''+selectedInstance+'<br/>';
+        return;
+    alert('2222');
+    inheritance_html =document.all.inheritBox.innerHTML;
+    alert(inheritance_html);
     $.each(inheritance, function(index,value){
-	inheritance_html += "<div class='text-indent'>" + value.parent_fe +":" + value.child_fe + "<input type='submit' value='delete' onClick='deleteInheritance(" + value.frame_rel_id + ");'/> </div>";
-    });
+           inheritance_html += "<div class='text-indent'>" + "<div class='text-indent'>"+ value.child_fe + "  :  " + value.parent_fe +  " </div>";
+           });
+    alert(inheritance_html);
     $('.inherits-from-body').html(inheritance_html);
 }
+
+function getInheritance(selectedInstance){
+    jQuery.ajax({
+                url: 'http://127.0.0.1:8000/inherits_from/?scene_id=' + scene_id +'&corpus_id=' + corpus_id +'&instance_name='+selectedInstance,
+                type: 'get',
+                dataType: 'text',
+                success:function(data)
+                {
+                inheritance = data.replace(/&quot;/ig,'"');
+                inheritance = jQuery.parseJSON(inheritance);
+                updateInheritance(selectedInstance,inheritance);
+                
+                //addEventsToInheritance();
+                //return inheritance;
+                } 
+                });
+}
+
+function updateInheritance(selectedInstance,inheritance){
+    $('.inherits-from-body').html('');
+    if(inheritance.length==0)
+        return;
+    inheritance_html = ''+selectedInstance+'<br/>';
+    $.each(inheritance, function(index,value){
+           inheritance_html += "<div class='text-indent'>" + value.child_frame + "   inherits from   " + value.parent_frame +  " </div>";
+           });
+    $('.inherits-from-body').html(inheritance_html);
+    //$('.inherits-from-body').html("(Parent):");
+    alert('update top')
+}
+
+
 
 function addEventsToInheritance(){
   $('.inherits-from-body input[type=checkbox]').live('change',function(){

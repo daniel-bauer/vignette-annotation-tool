@@ -5,22 +5,23 @@
     <title>Annotation Tool </title>
     <link rel="stylesheet" href="http://127.0.0.1:8000/media/test.css"></link>
     <script type="text/javascript" src="http://127.0.0.1:8000/media/jquery-1.4.2.min.js"></script>
-    <script type="text/javascript" src="http://127.0.0.1:8000/media/raphael.js"></script>
-    <script type="text/javascript" src="http://127.0.0.1:8000/media/dracula_graffle.js"></script>
-    	<script type="text/javascript" src="http://127.0.0.1:8000/media/dracula_algorithms.js"></script>
-    <script type="text/javascript" src="http://127.0.0.1:8000/media/dracula_graph.js"></script>
+    <script type="text/javascript" src="http://127.0.0.1:8000/media/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="http://127.0.0.1:8000/media/jquery-ui-1.8.21.min.js"></script>
+    <script type="text/javascript" src="http://127.0.0.1:8000/media/jquery.graphviz.js"></script>
+    <link rel="stylesheet" href="http://127.0.0.1:8000/media//jquery.graphviz.css" />
     <script type="text/javascript">
       var scene_id=1;
       var corpus_id=1;
     </script>
     <script type="text/javascript" src="http://127.0.0.1:8000/media/test.js"></script>
     <script type="text/javascript" src="http://127.0.0.1:8000/media/createGraph.js"></script>
+      
   </head>
   <body>
     <div class="container">
        <div class="left border-css" align="left">
 	<div class="title-border"> Corpus </div>
-	<div class="image-description-head"> <input type="Submit" value="&gt;" onClick="selectNextRow(event);"/> <input type="Submit" value="&gt;&gt;" onClick="selectNextScene(event);"/> <input type="Submit" value="&lt;" onClick="selectPrevRow(event);"/> <input type="Submit" value="&lt;&lt;" onClick="selectPrevScene(event);"/></div>
+	<div class="image-description-head"> <input type="Submit" value="&lt;&lt;" onClick="selectPrevScene(event);"/> <input type="Submit" value="&lt;" onClick="selectPrevRow(event);"/> <input type="Submit" value="&gt;" onClick="selectNextRow(event);"/> <input type="Submit" value="&gt;&gt;" onClick="selectNextScene(event);"/>  </div>
 	<div class="image-description">
 	  <table id="file-display">
 	    <tbody></tbody>
@@ -43,23 +44,10 @@
        
       <div class="centre">
 	<textarea id="display-sentence"></textarea>
-	<div id="canvas"></div>
-<!--	
-	<div class="instances-header title-border"> Instances </div>
-	<div class="instances-box border-css">
-	  <select id="instances-name" width="auto" height="90%"/>
-	  <input type="submit" value="new instance" onClick="createNewInstance();"/>
-	</div>
-	<div class="textbox-header title-border"> TextBox </div>
-	<div class="text-box border-css">
-	  <input type="text" class="word" style="width:60%"/> <input type="text" class="word-pos" style="width:35%"/> <br/>
-	  <input type="text" class="word" style="width:60%"/> <input type="text" class="word-pos" style="width:35%"/> <br/>
-	  <input type="text" class="word" style="width:60%"/> <input type="text" class="word-pos" style="width:35%"/> <br/>
-	  <input type="submit" value="add selection" onClick="addTextbox(event);"/>
-	  <input type="submit" value="save selection" onClick="saveInstances(event);"/>
-	</div>
--->	
+          <p class="centeredImage" id="p_svg">
       </div>
+        
+        
    <div class="right border-css">
      <div class="title-border">Frame Structure</div>
      <div class="frame-structure-body border-css">
@@ -75,7 +63,7 @@
        <input type="submit" value="add empty" onClick="addNewFrameElement();"/>
      </div>
      <div class="title-border"> Inherits From </div>
-     <div class="inherits-from-body border-css">
+     <div id="inheritBox" class="inherits-from-body">
      </div>
      <div class="title-border"> Subframe </div>
      <div class="subframe-body">

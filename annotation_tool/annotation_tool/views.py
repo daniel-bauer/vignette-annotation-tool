@@ -10,6 +10,10 @@ import json
 import pprint
 import pygraphviz as pgv
 from english_lemmatizer import EnglishLemmatizer
+from subprocess import check_call
+import time
+from datetime import datetime, date, time
+import os
 
 lemmatizer = EnglishLemmatizer()
 lemmaTypes = ['N', 'V', 'A', 'Adv']
@@ -92,15 +96,29 @@ def delete_subframes(request):
    return HttpResponse('SUCESS')
 
 def get_inherits_from(request):
-   scene_id = request.GET.get('scene_id')
-   corpus_id = request.GET.get('corpus_id')
-   instance_name = request.GET.get('instance_name')
-   instances = Instances.objects.filter(scene_id=int(scene_id),corpus_id=int(corpus_id),name=instance_name)
-   instance = instances[0]
-   frame_id = instance.frame_id
-   frame_relations = FeRelations.objects.filter(parent_frame_id = frame_id,rel_type="ISA")
-   inheritance_json = [{'parent_fe':frame_rel.parent_fe_name, 'child_fe':frame_rel.child_fe_name,'frame_rel_id':frame_rel.id} for frame_rel in frame_relations]
-   return HttpResponse(json.dumps(inheritance_json))
+    scene_id = request.GET.get('scene_id')
+    corpus_id = request.GET.get('corpus_id')
+    instance_name = request.GET.get('instance_name')
+    instances = Instances.objects.filter(scene_id=int(scene_id),corpus_id=int(corpus_id),name=instance_name)
+    instance = instances[0]
+    frame_id = instance.frame_id
+    frame_relations = FrameRelations.objects.filter(child_frame_id = frame_id,relation_type="ISA")
+    inheritance_json = [{'parent_frame':frame_rel.parent_frame_name, 'child_frame':frame_rel.child_frame_name,'frame_relation_id':frame_rel.id} for frame_rel in frame_relations]
+    
+    return HttpResponse(json.dumps(inheritance_json))
+
+def get_inherits_element_from(request):
+    print 'come into inherits elements'
+    scene_id = request.GET.get('scene_id')
+    corpus_id = request.GET.get('corpus_id')
+    instance_name = request.GET.get('instance_name')
+    instances = Instances.objects.filter(scene_id=int(scene_id),corpus_id=int(corpus_id),name=instance_name)
+    instance = instances[0]
+    frame_id = instance.frame_id
+    frame_relations = FeRelations.objects.filter(child_frame_id = frame_id,rel_type="ISA")
+    inheritance_json = [{'parent_fe':frame_rel.parent_fe_name, 'child_fe':frame_rel.child_fe_name,'frame_rel_id':frame_rel.id} for frame_rel in frame_relations]
+    print inheritance_json
+    return HttpResponse(json.dumps(inheritance_json))
 
 # Creates new instances in the new window that is opened
 @ensure_csrf_cookie
@@ -201,7 +219,32 @@ def create_graph(request):
             adjacency_list_for_graph[instance.name] = {}
          list_for_instance = adjacency_list_for_graph[instance.name]
          list_for_instance[constituent_element.child_inst_name] = constituent_element.fe_name
-   return HttpResponse(json.dumps(adjacency_list_for_graph))
+   a=str(datetime.now())
+   a=a.replace(':','')
+   filename='graph'+a+'.dot'
+   graphname='graph'+a+'.svg'
+   f=file(filename, 'w')
+   print filename
+   print graphname
+   a='digraph G {'
+   for parentNode in adjacency_list_for_graph:
+        adjacencyListForNode = adjacency_list_for_graph[parentNode]
+        for childNode in adjacencyListForNode:
+           a=a+'"'+parentNode+'" ->"'+childNode+'"[label="'+adjacencyListForNode[childNode]+'"];'
+
+   a=a+'}'
+   f.write(a)
+   f.close()
+   
+   check_call(['dot','-Tsvg',filename,'-o',graphname])
+   tmp_svg=''
+   f=file(graphname,'r')
+   for l in f:
+        tmp_svg=tmp_svg+l
+   os.remove(filename)
+   os.remove(graphname)
+
+   return HttpResponse(json.dumps(tmp_svg))
    
 def get_related_frames_for_selected_instance(instance_name,scene_id,corpus_id,adjacency_list_for_graph):
    instance = Instances.objects.get(name=instance_name)
