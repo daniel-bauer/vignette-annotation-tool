@@ -18,6 +18,23 @@ import os
 lemmatizer = EnglishLemmatizer()
 lemmaTypes = ['N', 'V', 'A', 'Adv']
 
+def get_lexicalization(request):
+    print 'come into lexicalization'
+    
+    instance_id=request.GET.get('instance_id')
+    print instance_id
+    print 'before get'
+    lexical_sets=Lexicalization.objects.filter(id=int(instance_id))
+    print lexical_sets
+    print '11'
+    lexical_jason=[]
+    for lexical in lexical_sets:
+        json_object = {'id': lexical.id, 'instance_id': lexical.instance_id,'word':lexical.word,'word_position':lexical.word_position, 'sentence_id':lexical.sentence_id}
+        lexical_jason.append(json_object)
+    print lexical_jason
+    print 'lexical end'
+    return HttpResponse(json.dumps({"lexicalizations":lexical_jason}))
+
 def get_sentences(request):
    scene_id = request.GET.get('scene_id')
    corpus_id = request.GET.get('corpus_id')
@@ -35,7 +52,7 @@ def get_instances(request):
    for instance in instances:
 # TODO: check if frame exists      
       frame_name = Frames.objects.get(pk=instance.frame_id).name
-      json_object = {'name': instance.name, 'word' : instance.word, 'word_position': instance.word_position, 'frame': instance.frame_id, 'frame_name' : frame_name, 'scene': instance.scene_id, 'sentence' : instance.sentence_id, 'corpus' : instance.corpus_id}
+      json_object = {'name': instance.name, 'word' : instance.word, 'word_position': instance.word_position, 'frame': instance.frame_id, 'frame_name' : frame_name, 'scene': instance.scene_id, 'sentence' : instance.sentence_id, 'corpus' : instance.corpus_id, 'instance_id':instance.id}
       instance_json.append(json_object)
    return HttpResponse(json.dumps({"instances":instance_json}))
 

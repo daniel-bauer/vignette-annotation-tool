@@ -51,7 +51,7 @@ class Instances(models.Model):
     word_position = models.CharField(max_length=100)
     frame = models.ForeignKey("Frames")
     scene = models.ForeignKey("Scene")
-    sentence = models.ForeignKey("Sentence")
+    sentence = models.ForeignKey("Sentence", related_name="sentence1")
     corpus = models.ForeignKey("Corpus")
 
     @classmethod
@@ -63,7 +63,18 @@ class Instances(models.Model):
         instance = cls(name=name,word=word,word_position=word_position,frame=frame,scene=scene,sentence=sentence,corpus=corpus)
         instance.save()
         instance.name = str(instance.id) + '-' +  instance.name
+        
         instance.save()
+
+class Lexicalization(models.Model):
+
+    word = models.CharField(max_length=100)
+    word_position = models.CharField(max_length=100)
+    instance = models.ForeignKey("Instances",related_name="instance1")
+    sentence = models.ForeignKey("Sentence",related_name="sentence2")
+
+    
+
 
 class FrameElements(models.Model):
     frame = models.ForeignKey("Frames")
