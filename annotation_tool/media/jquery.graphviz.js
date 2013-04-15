@@ -243,12 +243,44 @@
                 return opts.dragableCursor;
             }
         }
+ 
+        function singleClick(e) {
+            var nodeTitle = getTitleOfNode(this);
+            updateTextBoxesWithInstanceValues(nodeTitle,instances.instances);
+            updateFrameDetails(nodeTitle,instances.instances);
+            getSubFrameDetails(nodeTitle);
+ 
+            getInheritance(nodeTitle);
+            getInheritanceDetails(nodeTitle);
+            updateConstituentDetails(nodeTitle);
+        }
+ 
+        function doubleClick(e) {
+        if(flag==0)
+        {
+            var nodeTitle = getTitleOfNode(this);
+            getAdjacencyList(scene_id,corpus_id,nodeTitle);
+            flag=1;
+        }
+        else
+        {
+            getAdjacencyList(scene_id,corpus_id,'');
+            flag=0;
+        }
+        }
+ 
+
+ 
         this.each(function () {
             var classOld;
+            if (opts.statusbar) {
+                //createToolBar(this);
+            }
             classOld = $(this).children().filter("g.graph").attr("class");
             $(this).children().filter("g.graph").attr("class", classOld + " " + opts.status);
             $(this).children().children("g").each(function () {
                 if (this.className.baseVal === "node") {
+                                                  
                     $(this).draggable({
                         start: function (event, ui) {
                             if (opts.status === "movable") {
@@ -272,18 +304,32 @@
                         },
                         cursor: getCursorToDrag
                     });
-                                                  
-                    $(this).click(function () {
-                       
-                            alert("click");
-                                                               
-                    });
-                    $(this).dblclick(function () {
-                            alert("doubleclick");
-                    });
-                   
 
                                                   
+                                                  $(this).click(function(e) {
+                                                                    var that = this;
+                                                                    setTimeout(function() {
+                                                                               var dblclick = parseInt($(that).data('double'), 10);
+                                                                               if (dblclick > 0) {
+                                                                               $(that).data('double', dblclick-1);
+                                                                               } else {
+                                                                               singleClick.call(that, e);
+                                                                               }
+                                                                               }, 300);
+                                                                    }).dblclick(function(e) {
+                                                                                $(this).data('double', 2);
+                                                                                doubleClick.call(this, e);
+                                                                                });
+                                                  
+                                            
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                    
                 } else if (this.className.baseVal === "edge") {
                     $(this).draggable({
                         start: function (event, ui) {

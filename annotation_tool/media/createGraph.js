@@ -6,33 +6,27 @@ function createGraph(svgContent){
    
     var pos1=svgContent.indexOf("width");
     var pos2=svgContent.indexOf("height");
-    alert('aa');
 
     var pos3=svgContent.indexOf("\"",pos1+7);
     var pos4=svgContent.indexOf("\"",pos2+8);
    
     var width=svgContent.substring(pos1+7,pos3-2);
     var height=svgContent.substring(pos2+8, pos4-2);
-    alert('--'+width+'--');
-    alert(height);
     
-    var innerWidth = document.getElementById('p_svg').offsetWidth;
-    alert(innerWidth);
-    
+    var innerWidth = document.getElementById('p_svg').offsetWidth;    
     var innerHeight = document.getElementById('p_svg').offsetHeight;
-    alert(innerHeight);
 
     
     svgContent_new=svgContent;
     
     
-    if(parseInt(width) < parseInt(innerWidth)){
+    if(parseInt(width)< parseInt(innerWidth)){
         
-        svgContent_new= svgContent.substring(0,pos1+7)+innerWidth+'px'+svgContent.substring(pos3);
+        svgContent_new= svgContent.substring(0,pos1+7)+innerWidth*0.93+'px'+svgContent.substring(pos3);
         
     }
     
-    if(parseInt(height)<parseInt(innerHeight)*0.9){
+    if(parseInt(height)*1.33<parseInt(innerHeight)){
          var pos2=svgContent_new.indexOf("height");
          var pos4=svgContent_new.indexOf("\"",pos2+8);
          svgContent_new=svgContent_new.substring(0,pos2+8)+innerHeight+'px'+svgContent_new.substring(pos4);

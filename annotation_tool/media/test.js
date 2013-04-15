@@ -20,12 +20,19 @@ function addTextSelectionFeature(){
 }
 
 function addTextToInstanceValues(text){
-   var empty_word_textboxes =  $('.text-box').find('input:text[value=""][class=word]');
-    var empty_word_position_textboxes = $('.text-box').find('input:text[value=""][class=word-pos]');
-    empty_word_textboxes.first().val(text);
+    $('#new_word').val(text);
     var word_position = getPositionOfWord($.trim(text));
-    empty_word_position_textboxes.first().val(word_position);
+    $('#new_word_pos').val(word_position);
+
 }
+
+//function addTextToInstanceValues(text){
+//    var empty_word_textboxes =  $('.text-box').find('input:text[value=""][class=word]');
+//    var empty_word_position_textboxes = $('.text-box').find('input:text[value=""][class=word-pos]');
+//    empty_word_textboxes.first().val(text);
+//    var word_position = getPositionOfWord($.trim(text));
+//    empty_word_position_textboxes.first().val(word_position);
+//}
 
 function saveInstances(event){
    var wordTextboxes =  $('.text-box').find('input:text[class=word]');
@@ -74,18 +81,45 @@ function getPositionOfWord(text){
     return word_position
 }
 
-function getInstances(){
+//function getInstances(){
+//    jQuery.ajax({
+//       url: 'http://127.0.0.1:8000/instances/?scene_id=' + scene_id +'&corpus_id=' + corpus_id,
+//       type: 'get',
+//       dataType: 'text',
+//       success:function(data)
+//        {
+//	   instances = data.replace(/&quot;/ig,'"');       
+//	   instances = jQuery.parseJSON(instances);
+//	   addInstances(instances);
+//	}
+//    });
+//}
+
+function addLexicalization(selectedInstance){
     jQuery.ajax({
-       url: 'http://127.0.0.1:8000/instances/?scene_id=' + scene_id +'&corpus_id=' + corpus_id,
-       type: 'get',
-       dataType: 'text',
-       success:function(data)
-        {
-	   instances = data.replace(/&quot;/ig,'"');       
-	   instances = jQuery.parseJSON(instances);
-	   addInstances(instances);
-	}
-    });
+                url: 'http://127.0.0.1:8000/lexicalization/?scene_id=' + scene_id +'&corpus_id=' + corpus_id,
+                type: 'get',
+                dataType: 'text',
+                success:function(data)
+                {
+                $('#file-display > tbody:last').html("");
+                $('#file-display > tbody:last').append(data);
+                }
+                });
+    
+}
+
+function updateTextBoxesWithInstanceValues(selectedInstance,instances){
+    var number = 0;
+    $('.text-box').find('.word').val('');
+    $('.text-box').find('.word-pos').val('');
+    $.each(instances, function(index, value){
+           if(value.name == $.trim(selectedInstance)){
+           $($('.text-box .word')[number]).val(value.word);
+           $($('.text-box .word-pos')[number]).val(value.word_position);
+           number = number + 1;
+           }
+           });
 }
 
 function updateConstituentDetails(instanceName){
@@ -165,6 +199,10 @@ function addInstances(instances){
     var selectedInstance = instances.instances[0].name;
     updateTextBoxesWithInstanceValues(selectedInstance,instances.instances);
     updateFrameDetails(selectedInstance,instances.instances);
+    getSubFrameDetails(selectedInstance);
+    getInheritance(selectedInstance);
+    getInheritanceDetails(selectedInstance);
+	updateConstituentDetails(selectedInstance);
 
     $('#instances-name').change(function () {
 	selectedInstance = $(this).val();
@@ -173,20 +211,20 @@ function addInstances(instances){
 	getSubFrameDetails(selectedInstance);
                                 
     getInheritance(selectedInstance);
-                                alert('before detail')
     getInheritanceDetails(selectedInstance);
-                                alert('after detail')
 	updateConstituentDetails(selectedInstance);
     }) 
 }
 
 function viewAllSubFrames(){
    var selectedInstance =  $('#instances-name').val();
-    getAdjacencyList(scene_id,corpus_id,selectedInstance);
+   getAdjacencyList(scene_id,corpus_id,selectedInstance);
+   flag=1;
 }
 
 function hideAllSubFrames(){
     getAdjacencyList(scene_id,corpus_id,'');
+    flag=0;
 }
 
 function getSubFrameDetails(selectedInstance){
@@ -236,7 +274,6 @@ function deleteSubFrame(frame_rel_id){
         dataType: 'text',
         success:function(data)
         {
-	  alert('deleted subframe');
 	  viewAllSubFrames();
 	}
     });
@@ -249,8 +286,8 @@ function deleteInheritance(frame_rel_id){
         dataType: 'text',
         success:function(data)
         {
-	  alert('deleted Inheritance');
 	    getInheritance($('#instances-name').val());
+        getInheritanceDetails($('#instances-name').val());
 	}
     });
 }
@@ -271,16 +308,12 @@ function getInheritanceDetails(selectedInstance){
 }
 
 function updateInheritanceDetails(selectedInstance,inheritance){
-    alert('22222');
     if(inheritance.length==0)
         return;
-    alert('2222');
     inheritance_html =document.all.inheritBox.innerHTML;
-    alert(inheritance_html);
     $.each(inheritance, function(index,value){
            inheritance_html += "<div class='text-indent'>" + "<div class='text-indent'>"+ value.child_fe + "  :  " + value.parent_fe +  " </div>";
            });
-    alert(inheritance_html);
     $('.inherits-from-body').html(inheritance_html);
 }
 
@@ -311,7 +344,6 @@ function updateInheritance(selectedInstance,inheritance){
            });
     $('.inherits-from-body').html(inheritance_html);
     //$('.inherits-from-body').html("(Parent):");
-    alert('update top')
 }
 
 
@@ -337,18 +369,8 @@ function updateFrameDetails(selectedInstance,instances)
     });
 }
 
-function updateTextBoxesWithInstanceValues(selectedInstance,instances){
-    var number = 0;
-    $('.text-box').find('.word').val('');
-    $('.text-box').find('.word-pos').val('');    
-    $.each(instances, function(index, value){
-        if(value.name == $.trim(selectedInstance)){
-    	    $($('.text-box .word')[number]).val(value.word);
-    	    $($('.text-box .word-pos')[number]).val(value.word_position);
-	    number = number + 1;
-    	}
-    });
-}
+
+
 
 function addSentences(){
     jQuery.ajax({

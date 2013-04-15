@@ -5,6 +5,7 @@
     <title>Annotation Tool </title>
     <link rel="stylesheet" href="http://127.0.0.1:8000/media/test.css"></link>
     <script type="text/javascript" src="http://127.0.0.1:8000/media/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="http://127.0.0.1:8000/media/jquery-1.8.2.min.js"></script>
     <script type="text/javascript" src="http://127.0.0.1:8000/media/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="http://127.0.0.1:8000/media/jquery-ui-1.8.21.min.js"></script>
     <script type="text/javascript" src="http://127.0.0.1:8000/media/jquery.graphviz.js"></script>
@@ -12,9 +13,17 @@
     <script type="text/javascript">
       var scene_id=1;
       var corpus_id=1;
+      var flag=0;
     </script>
     <script type="text/javascript" src="http://127.0.0.1:8000/media/test.js"></script>
     <script type="text/javascript" src="http://127.0.0.1:8000/media/createGraph.js"></script>
+    <script type="text/javascript">
+          (function($){
+           $(document).ready(function () {
+                             $("svg").graphviz({statusbar: false});
+                             });
+           })(jQuery);
+          </script>
       
   </head>
   <body>
@@ -33,12 +42,29 @@
 	  <input type="submit" value="new instance" onClick="createNewInstance();"/>
 	</div>
 	<div class="textbox-header title-border"> TextBox </div>
-	<div class="text-box border-css">
+	
+        <div class="text-box border-css">
+            <td> Current Instance</td>
+            <input type="text" class="word" style="width:60%"/> <input type="text" class="word-pos" style="width:35%"/> <br/>
+        </div>
+        
+        <div class="text-box1 border-css">
+            <td> New Selection  </td> <br>
+            <td> word <text-indent> <input id="new_word" type="text" class="word" style="width:60%"/> </td>
+            <td> position <input id="new_word_pos" type="text" class="word-pos" style="width:50%"/> </td> <br/>
+            <!--input type="submit" value="add selection to current instance" onClick="addTextbox(event);"/-->
+            <input type="submit" value="add selection to current instance" onClick="saveInstances(event)"/>
+            <input type="submit" value="create new instance" onClick="createNewInstance();"/>
+        </div>
+        
+        
+        
+        <!---div class="text-box border-css">
 	  <input type="text" class="word" style="width:60%"/> <input type="text" class="word-pos" style="width:35%"/> <br/>
 	  <input type="text" class="word" style="width:60%"/> <input type="text" class="word-pos" style="width:35%"/> <br/>
 	  <input type="text" class="word" style="width:60%"/> <input type="text" class="word-pos" style="width:35%"/> <br/>
 	  <input type="submit" value="add selection" onClick="addTextbox(event)"/>
-	  <input type="submit" value="save selection" onClick="saveInstances(event)"/>
+	  <input type="submit" value="save selection" onClick="saveInstances(event)"/--->
 	</div>
       </div>
        
@@ -51,15 +77,15 @@
    <div class="right border-css">
      <div class="title-border">Frame Structure</div>
      <div class="frame-structure-body border-css">
-       <label for="instance" class="instance_details" style="border: 1px solid #000;">Instance : i5</label> <input type="submit" value="delete"/> <br/>
+       <label for="instance" class="instance_details" style="border: 1px solid #000;">Instance : i5</label>  <br/>
        <br/>
-       Frame : <input type="text" class="frame-name" style="width:45%"/> <input type="submit" value="save type"/> <br/>
-   <label for="saved" class="is-saved"></label> <input type="submit" value="up"/> view <input type="submit" value="" style="width:10px"/>
+       Frame : <input type="text" class="frame-name" style="width:45%"/> <br/>
+   <label for="saved" class="is-saved"></label>
      </div>
      <div class="title-border"> Frame Elements </div>
      <div class="frame-elements-body border-css">
-       <input type"text" class="frame-elements-name" style="width:50%"> <select class="frame-element-instances"></select> lexical <input type="checkbox" class="lexical-checkbox" style="width:3px"/> <br/>
-      <input type"text" class="frame-elements-name" style="width:50%"> <select class="frame-element-instances"></select> lexical <input type="checkbox" class="lexical-checkbox" style="width:3px"/> <br/>
+       <input type"text" class="frame-elements-name" style="width:50%"> <select class="frame-element-instances"></select> <br/>
+      <input type"text" class="frame-elements-name" style="width:50%"> <select class="frame-element-instances"></select> <br/>
        <input type="submit" value="add empty" onClick="addNewFrameElement();"/>
      </div>
      <div class="title-border"> Inherits From </div>
