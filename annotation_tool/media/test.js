@@ -81,19 +81,19 @@ function getPositionOfWord(text){
     return word_position
 }
 
-//function getInstances(){
-//    jQuery.ajax({
-//       url: 'http://127.0.0.1:8000/instances/?scene_id=' + scene_id +'&corpus_id=' + corpus_id,
-//       type: 'get',
-//       dataType: 'text',
-//       success:function(data)
-//        {
-//	   instances = data.replace(/&quot;/ig,'"');       
-//	   instances = jQuery.parseJSON(instances);
-//	   addInstances(instances);
-//	}
-//    });
-//}
+function getInstances(){
+    jQuery.ajax({
+       url: 'http://127.0.0.1:8000/instances/?scene_id=' + scene_id +'&corpus_id=' + corpus_id,
+       type: 'get',
+       dataType: 'text',
+       success:function(data)
+       {
+	   instances = data.replace(/&quot;/ig,'"');       
+	   instances = jQuery.parseJSON(instances);
+	   addInstances(instances);
+       }
+    });
+}
 
 function addLexicalization(selectedInstance){
     jQuery.ajax({
