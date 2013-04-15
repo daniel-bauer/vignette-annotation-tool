@@ -14,6 +14,7 @@
       var scene_id=1;
       var corpus_id=1;
       var flag=0;
+      var popup;
     </script>
     <script type="text/javascript" src="http://127.0.0.1:8000/media/test.js"></script>
     <script type="text/javascript" src="http://127.0.0.1:8000/media/createGraph.js"></script>
@@ -24,7 +25,7 @@
                              });
            })(jQuery);
           </script>
-      
+
   </head>
   <body>
     <div class="container">
@@ -39,7 +40,7 @@
 		<div class="instances-header title-border"> Instances </div>
 	<div class="instances-box border-css">
 	  <select id="instances-name" width="auto" height="90%"/>
-	  <input type="submit" value="new instance" onClick="createNewInstance();"/>
+	  <input type="submit" value="new instance" onClick="popup=createNewInstance();"/>
 	</div>
 	<div class="textbox-header title-border"> TextBox </div>
 	
@@ -54,7 +55,7 @@
             <td> position <input id="new_word_pos" type="text" class="word-pos" style="width:50%"/> </td> <br/>
             <!--input type="submit" value="add selection to current instance" onClick="addTextbox(event);"/-->
             <input type="submit" value="add selection to current instance" onClick="saveInstances(event)"/>
-            <input type="submit" value="create new instance" onClick="createNewInstance();"/>
+            <input type="submit" value="create new instance" onClick="popup=createNewInstance();"/>
         </div>
         
         

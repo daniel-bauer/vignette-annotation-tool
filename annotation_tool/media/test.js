@@ -6,6 +6,10 @@ $(document).ready(function(){
     eventsForChangeScene();
     addTextChangedToFrameDetails();
     addTextSelectionFeature();
+    if (popup)
+        {
+            popup.onclose = function () { opener.location.reload(); }
+        }
    });
 
 function addTextSelectionFeature(){
@@ -178,6 +182,7 @@ function addRowHighlighting(){
     });
 }
 
+function 
 
 // opens a new window where the new instance can be created. DOES NOT ACTUALLY CREATE A NEW INSTANCE
 function createNewInstance(){
