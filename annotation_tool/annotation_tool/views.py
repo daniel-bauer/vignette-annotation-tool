@@ -327,12 +327,23 @@ def new_instances(request):
        results = search(searchType, query)
 
    resultFEs = []
+   subframes = []
+   parentframes = []
    for result in results:
        fes = FrameElements.objects.filter(frame_name=result.name)
+       sfs = Frames.objects.filter(child_frame1__parent_frame_name=result.name, child_frame1__relation_type="SUBFRAME")
+       pf = Frames.objects.filter(parent_frame1__child_frame_name=result.name, parent_frame1__relation_type="ISA")
+
        resultFEs.append(serializers.serialize('json', fes))
+       subframes.append(serializers.serialize('json', sfs))
+       if(len(pf) != 0):
+           parentframes.append(serializers.serialize('json', pf))
+       else:
+           parentframes.append('')
+
    results_json = serializers.serialize('json', results)
     
-   return render_to_response('newInstance.html',{'scene_id':scene_id,'corpus_id':corpus_id,'sentence_id':sentence_id,'word':word,'word_position':word_position,'results':results_json,'resultFEs':resultFEs})
+   return render_to_response('newInstance.html',{'scene_id':scene_id,'corpus_id':corpus_id,'sentence_id':sentence_id,'word':word,'word_position':word_position,'results':results_json,'resultFEs':resultFEs,'subframes':subframes,'parentframes':parentframes})
    
 class AnnotationToolView(TemplateView):
    template_name ="base.html"

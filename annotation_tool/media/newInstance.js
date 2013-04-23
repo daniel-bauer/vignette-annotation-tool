@@ -1,5 +1,6 @@
 $(document).ready(function() {
     var header = '';
+
     if(!word || word == '') {
         header = 'Select implicitly evoked frame';
     }
@@ -11,65 +12,125 @@ $(document).ready(function() {
     $(window).unload(function() {
         opener.onPopupClose();
     });
+
     csrfProtect();
     populateFrameList();
+    toggleDetails();
     toggleSelectedFrame();
 });
 
 function populateFrameList() {
     var frameList = $('#frame-list');
-    var i = 0;
-    for(var j = 0; j < results.length; j++) {
-        var value = results[j];
-        var fes = resultFEs[j];
+    var first = true; 
+    for(var i = 0; i < results.length; i++) {
+        var value = results[i];
+        var fes = resultFEs[i];
+        var sfs = subframes[i];
+        var parentframe = parentframes[i];
 
         var text = '<span class=frame-text>' + value.fields.name + '</span>';
-        var data = '<div class=data><p>';
+        text = text + '<span class="select">Select frame</span>';
+        text = text + '<div class=data>';
 
-        $.each(fes, function(index, element) {
-            data = data + element.fields.fe_name + ' ';
-        })
-
-        data = data + '</p></div>';
-
+        data = makeDataString(value, fes, sfs, parentframe);
+        if(data == '') {
+            data = '<p>Primitive frame</p>';
+        }
+        
         // Give frame topframe class if it is the first item
         var fclass = '"';
-        if(i == 0 ) {
+        if(first) {
             fclass = ' topframe"';
+            first = false;
         }
 
         var newItem = '<li class="frame' + fclass + ' id=' +  value.fields.name + '>';
-        newItem = newItem + text + data + '</li>';
+        newItem = newItem + text + data +  '</div></li>';
         frameList.append(newItem);
         frameList.find('>:last-child .data').hide();
-
-        i = 1;
     };
+}
+
+function makeDataString(value, fes, sfs, parentframe) {
+    var fetext = '';
+    if(fes.length != 0) {
+        fetext = '<p>Frame elements: ';
+        $.each(fes, function(index, element) {
+            fetext = fetext + element.fields.fe_name + ', ';
+        });
+        fetext = fetext.substring(0, fetext.length-2);  // strip last ', '
+        fetext = fetext + '</p>';
+    }
+    
+    var sftext = '';
+    if(sfs.length != 0) {
+        sftext = '<p>Subframes: ';
+        $.each(sfs, function(index, element) {
+            sftext = sftext + element.fields.name + ', ';
+        });
+        sftext = sftext.substring(0, sftext.length-2);
+        sftext = sftext + '</p>';
+    }
+
+    var ptext = '';
+    if(parentframe != '') {
+        ptext = '<p>Inherits from: ' + parentframe[0].fields.name + '</p>';
+    }
+
+    return fetext + sftext + ptext
+}
+
+function toggleDetails() {
+    var expandedFrameID = '';
+    $('#frame-list').on('click', '.frame', function() {
+        if(toggledetails) {
+            toToggle = $(this).find('.data');
+            toToggle.toggle();
+            var toggleID = $(this).attr('id');
+            
+            if(expandedFrameID != '') {
+                var unexpanded = $('#frame-list li#' + expandedFrameID);
+                unexpanded.find('.data').hide();
+                
+                if(toggleID == unexpanded.attr('id')) {
+                    expandedFrameID = '';
+                }
+                else {
+                    expandedFrameID = toggleID;
+                }
+            }
+            else {
+                expandedFrameID = toggleID;
+            }
+        }
+        else {
+            toggledetails = true;
+        }
+    });
 }
 
 function toggleSelectedFrame() {
     var selectedFrameID = '';
-    $('#frame-list').on('click', '.frame', function() {
-        toSelect = $(this)
-        toSelect.toggleClass('selected');
+    $('#frame-list').on('click', '.select', function() {
+        toggledetails = false;
+
+        toToggle = $(this).parent();
+        toToggle.toggleClass('selected');
+        var toggleID = toToggle.attr('id');
         
-        var thisID = toSelect.attr('id');
         if(selectedFrameID != '') {
-            var toUnselect = $('#frame-list li#' + selectedFrameID);
-            toUnselect.removeClass('selected');
-            toUnselect.find('.data').hide();
+            var unselected = $('#frame-list li#' + selectedFrameID);
+            unselected.removeClass('selected');
             
-            if(thisID == toUnselect.attr('id')) {
+            if(toggleID == unselected.attr('id')) {
                 selectedFrameID = '';
             }
             else {
-                selectedFrameID = thisID;
-                toSelect.find('.data').show();
+                selectedFrameID = toggleID;
             }
         }
         else {
-            selectedFrameID = thisID;
-            toSelect.find('.data').show();
+            selectedFrameID = toggleID;
         }
     });
 }
@@ -93,8 +154,7 @@ function createInstance(frameName) {
         },
         dataType: 'text',
         success:function(data) {
-            alert(data + '\nThis window will now close');
-            window.close()
+            alert(data + '\nYou may now close this window');
         },
         error:function(jqXHR, textStatus, errorThrown) {
             alert(jqXHR.status + ', ' + textStatus + ', ' + errorThrown);
@@ -107,51 +167,50 @@ function createFrame() {
     frameName = $('input[name="frame_name"]').attr('value');
 
     hasLexicalization = 1;
-    if(word == '')
+    if(word == '') {
         hasLexicalization = 0;
-   
-    // Create frame 
-    ajaxRequest('/create_frame/', 'POST', false,
-            {
-                name: frameName,
-                frameType: 'USER_MADE',
-                hasLexicalization: hasLexicalization
-            });
-
-    // Create frame relation
-    ajaxRequest('/create_framerelation/', 'POST', false,
-            {
-                parentFrameName: parentFrameName,
-                frameName: frameName,
-                relationType: 'ISA'
-            });
-
-    // Create frame elements and fe relationships
-    ajaxRequest('/create_frameelements/', 'POST', false, 
-            {
-                frameName: frameName,
-                parentFrameName: parentFrameName
-            });
-
-    createInstance(frameName);
-}
-
-// ajax request helper function
-var ajaxRequest = function(url, type, success, data) {
-    var successFunc = function(data) {}
-    if(success) {
-        successFunc = function(data) {
-            alert('Successfully created new frame.\nThis window will now close.');
-            window.close();
-        }
     }
-    jQuery.ajax({
-        url: url,
-        type: type,
-        data: data,
-        success: successFunc,
-        error:function(jqXHR, textStatus, errorThrown) {
-            alert(url + ', ' + jqXHR.status + ', ' + textStatus + ', ' + errorThrown);
+
+    var errorfunc = function(jqXHR, textStatus, errorThrown) {
+            alert(this.url + ', ' + jqXHR.status + ', ' + textStatus + ', ' + errorThrown);
+        }
+
+    // Create frame 
+    jQuery.ajax({url: '/create_frame/', type: 'POST', dataType: 'text',
+        data:
+        {
+            name: frameName,
+            frameType: 'USER_MADE',
+            hasLexicalization: hasLexicalization
+        },
+        error: errorfunc,
+        success: function(data) {
+
+            // Create frame relation
+            jQuery.ajax({url: '/create_framerelation/', type: 'POST', dataType: 'text',
+                data:
+                {
+                    frameName: frameName,
+                    parentFrameName: parentFrameName,
+                    relationType: 'ISA'
+                },
+                error: errorfunc,
+                success: function(data) {
+
+                    // Create frame elements and fe relationships
+                    jQuery.ajax({url: '/create_frameelements/', type: 'POST', dataType: 'text',
+                        data:
+                        {
+                            frameName: frameName,
+                            parentFrameName: parentFrameName
+                        },
+                        error: errorfunc,
+                        success: function(data) {
+                            createInstance(frameName);
+                        }
+                    });
+                }
+            });
         }
     });
 }

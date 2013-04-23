@@ -13,8 +13,8 @@ h1 {
 }
 
 #frame-list {
-    margin: 0 15em;
-    border: 1px;
+    margin: .5em 15em;
+    border: 2px;
     border-color: #000000;
     border-style: solid;
     height: 22em;
@@ -31,7 +31,9 @@ h1 {
     border-left: 0;
     border-right: 0;
     border-color: #000000;
-    border-style: dashed;
+    border-style: solid;
+    font-family: Helvetica;
+    font-size: 15px;
 
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -47,6 +49,22 @@ h1 {
 
 .frame-text {
     margin-left: 1em;
+    font-size: 17px;
+}
+
+.select {
+    font-size: 13px;
+    padding: .1em;
+    float: right;
+
+    text-shadow: .1em .1em #CCCCCC;
+    border: 1px;
+    border-style: solid;
+    border-color: #0088CC;
+}
+
+.data {
+    margin-left: 2em;
 }
 
 .selected {

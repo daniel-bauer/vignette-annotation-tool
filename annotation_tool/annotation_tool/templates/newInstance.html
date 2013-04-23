@@ -10,10 +10,20 @@
             var corpusId = '{{corpus_id}}';
             var sentenceId = '{{sentence_id}}';
             var results = {{results|safe}};
+
             var resultFEs = {{resultFEs|safe}};
+            var subframes = {{subframes|safe}};
+            var parentframes = {{parentframes|safe}};
             for(var i = 0; i < resultFEs.length; i++) {
                 resultFEs[i] = jQuery.parseJSON(resultFEs[i]);
+                subframes[i] = jQuery.parseJSON(subframes[i]);
+                if(parentframes[i] != '') {
+                    parentframes[i] = jQuery.parseJSON(parentframes[i]);
+                }
             }
+
+            
+            var toggledetails = true;
         </script>
         <script type="text/javascript" src="http://127.0.0.1:8000/media/csrf.js"></script>
         <script type="text/javascript" src="http://127.0.0.1:8000/media/newInstance.js"></script>
