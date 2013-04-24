@@ -70,8 +70,8 @@ class Lexicalization(models.Model):
 
     word = models.CharField(max_length=100)
     word_position = models.CharField(max_length=100)
-    instance = models.ForeignKey("Instances",related_name="instance1")
-    sentence = models.ForeignKey("Sentence",related_name="sentence2")
+    instance = models.ForeignKey("Instances")
+    sentence = models.ForeignKey("Sentence")
 
     
 

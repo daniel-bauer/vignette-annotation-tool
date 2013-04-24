@@ -220,22 +220,32 @@ def create_graph(request):
    corpus_id = request.GET.get('corpus_id')
    instances = Instances.objects.filter(scene_id=int(scene_id),corpus_id=int(corpus_id))
    adjacency_list_for_graph = {}
+   constituent_instance={}
    if 'instance_name' in request.GET:
       current_instance_name = request.GET.get('instance_name').strip()
-      adjacency_list_for_graph = get_related_frames_for_selected_instance(current_instance_name,scene_id,corpus_id,adjacency_list_for_graph)
+      adjacency_list_for_graph, constituent_instance= get_related_frames_for_selected_instance(current_instance_name,scene_id,corpus_id,adjacency_list_for_graph,constituent_instance)
    else:
       current_instance_name = ''
       print "no current instance"
-
    for instance in instances:
       if instance.name == current_instance_name:
          continue
       constituent_elements = ConstituentElements.objects.filter(parent_instance_id=instance.id)
+      count=0
       for constituent_element in constituent_elements:
+         count=count+1
+         print str(count) + str(instance.name)
+         constituent_instance[constituent_element.child_instance_id]=1
          if instance.name not in adjacency_list_for_graph:
             adjacency_list_for_graph[instance.name] = {}
          list_for_instance = adjacency_list_for_graph[instance.name]
          list_for_instance[constituent_element.child_inst_name] = constituent_element.fe_name
+      if count==0:
+          if  instance.id in constituent_instance or instance.id in adjacency_list_for_graph:
+              print 'already add'
+          else:
+              print 'non-bond instance'+str(instance.name)+' '+str(instance.id)
+              adjacency_list_for_graph[instance.name]={}
    a=str(datetime.now())
    a=a.replace(':','')
    filename='graph'+a+'.dot'
@@ -246,8 +256,13 @@ def create_graph(request):
    a='digraph G {'
    for parentNode in adjacency_list_for_graph:
         adjacencyListForNode = adjacency_list_for_graph[parentNode]
+        count=0
         for childNode in adjacencyListForNode:
            a=a+'"'+parentNode+'" ->"'+childNode+'"[label="'+adjacencyListForNode[childNode]+'"];'
+           count=count+1
+        if count==0:
+           print 'graph add one'
+           a=a+ '"'+parentNode+'";'
 
    a=a+'}'
    f.write(a)
@@ -263,10 +278,13 @@ def create_graph(request):
 
    return HttpResponse(json.dumps(tmp_svg))
    
-def get_related_frames_for_selected_instance(instance_name,scene_id,corpus_id,adjacency_list_for_graph):
+def get_related_frames_for_selected_instance(instance_name,scene_id,corpus_id,adjacency_list_for_graph,constituent_instance):
    instance = Instances.objects.get(name=instance_name)
    constituent_elements = ConstituentElements.objects.filter(parent_instance_id=instance.id)
-      
+    
+   for c_e in constituent_elements:
+       constituent_instance[c_e.child_instance_id]=1
+    
    frame_relations = FrameRelations.objects.filter(parent_frame_id=instance.frame_id)
    adj_list_for_instance = {}
    for frame_relation in frame_relations:
@@ -278,7 +296,7 @@ def get_related_frames_for_selected_instance(instance_name,scene_id,corpus_id,ad
       adjacency_list_for_graph[frame_relation.child_frame_name] = adjacency_list_for_subframe
       adj_list_for_instance[frame_relation.child_frame_name] = 'SUBFRAME'
    adjacency_list_for_graph[instance_name] = adj_list_for_instance
-   return adjacency_list_for_graph
+   return adjacency_list_for_graph,constituent_instance
 
 # Retrieve frame search data from server
 def search(searchType, query):
