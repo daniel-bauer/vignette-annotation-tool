@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+    <head>
+        <title>Frame Editor</title>
+        <link rel="stylesheet" type="text/css" href="../../media/frame-editor.css"></link>
+        <script type="text/javascript" src="../../media/jquery-1.8.2.min.js"></script>
+        <script type="text/javascript" src="../../media/csrf.js"></script>
+        <script type="text/javascript" src="../../media/frameEditor.js"></script>
+
+        <script type="text/javascript">
+            var frameName = '{{frame_name}}';
+            var isParent = '{{is_parent}}';
+            var inheritedElements = {{inherited_elements|safe}};
+            var newElements = {{new_elements|safe}};
+        </script>
+    </head>
+    <body>
+        <h1></h1>
+        <div id="editor">
+            <div class="mainlist">
+                <h2>Frame Elements:</h2>
+                <div class="sublist">
+                    <h3>Inherited</h3>
+                    <ul id="inherited" class="rbuttons">
+                    </ul>
+
+                    <ul class="buttonlist">
+                        <li>
+                        <button id="brinherited" type="button" onClick="rename('inherited');">
+                            Rename
+                        </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <div id="newlist" class="sublist">
+                    <h3>Uninherited</h3>
+                    <ul id="new" class="rbuttons">
+                    </ul>
+
+                    <ul id="newb" class="buttonlist">
+                        <li>
+                        <button id="brnew" type="button" onClick="rename('new');">
+                            Rename
+                        </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mainlist">
+                <h2>Subframes:</h2>
+                <ul id="subframes">
+                </ul>
+
+                <ul class="buttonlist">
+                    <li>
+                        <button id="sdel" type="button" onClick="subframeDel();">Delete</button>
+                    </li>
+
+                    <li>
+                        <button id="sadd" type="button" onClick="subframeAdd();">Add</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </body>
+</html>

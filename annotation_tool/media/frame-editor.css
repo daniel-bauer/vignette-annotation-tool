@@ -1,0 +1,57 @@
+body {
+    text-align: center;
+}
+
+h1, h2, h3 {
+    font-weight: normal;
+}
+
+#editor {
+    height: 70%;
+}
+
+.mainlist {
+    text-align: center;
+    width: 50%;
+    float: left;
+}
+
+.sublist {
+    text-align: center;
+    float: left;
+    width: 50%;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.rbuttons {
+    text-align: left;
+    margin-left: 35%;
+}
+
+.rbuttons li {
+    margin-bottom: .2em;
+}
+
+.rcontent {
+    margin-left: 1em;
+    font-family: Helvetica;
+    font-size: .95em;
+}
+
+div[id*='rename_'] {
+    font-family: Helvetica;
+    font-size: .8em;
+}
+
+#newb p {
+    font-family: Helvetica;
+    font-size: .8em;
+}
+
+button {
+    margin: .5em;
+}

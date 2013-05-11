@@ -195,6 +195,7 @@ def create_framerelation(request):
         return response
 
 # Creates all frame elements for inherited frame
+@ensure_csrf_cookie
 def create_frameelements(request):
     frameName = request.POST['frameName']
     parentFrameName = request.POST['parentFrameName']
@@ -362,7 +363,138 @@ def new_instances(request):
    results_json = serializers.serialize('json', results)
     
    return render_to_response('newInstance.html',{'scene_id':scene_id,'corpus_id':corpus_id,'sentence_id':sentence_id,'word':word,'word_position':word_position,'results':results_json,'resultFEs':resultFEs,'subframes':subframes,'parentframes':parentframes})
-   
+
+# A new page for editing frames
+def frame_editor(request):
+    frame_name = request.GET.get('frame_name')
+    frame = Frames.objects.get(name=frame_name)
+
+    childframes = Frames.objects.filter(parent_frame1__parent_frame_name=frame_name,
+            parent_frame1__relation_type="ISA")
+    is_parent = len(childframes) > 0
+
+    inherited_elements = FrameElements.objects.filter(frame_name=frame_name,
+            child_fe__rel_type="ISA")
+
+    new_elements = FrameElements.objects.filter(frame_name=frame_name, child_fe=None)
+
+    data = {
+            'frame_name': frame_name,
+            'is_parent': is_parent,
+            'inherited_elements': serializers.serialize('json', inherited_elements),
+            'new_elements': serializers.serialize('json', new_elements)
+           }
+
+    return render_to_response('frameEditor.html', data)
+
+@ensure_csrf_cookie
+def rename_frameelement(request):
+    old_name = request.POST.get('old_name')
+    new_name = request.POST.get('new_name')
+    frame_name = request.POST.get('frame_name')
+
+    if(old_name == 'Self'):
+        response = HttpResponse()
+        response.status_code = 400
+        response.content = "Cannot rename Self frame element"
+        return response
+
+    try:
+        # Rename frame element
+        frame_element = FrameElements.objects.get(frame_name=frame_name, fe_name=old_name)
+        frame_element.fe_name = new_name
+        frame_element.save()
+
+        # Update parent frame element relations
+        parent_relations = FeRelations.objects.filter(parent_fe__frame_name=frame_name,
+                parent_fe_name=old_name)
+        for relation in parent_relations:
+            relation.parent_fe_name = new_name
+            relation.save()
+
+        # Update child frame element relations
+        child_relations = FeRelations.objects.filter(child_fe__frame_name=frame_name,
+                child_fe_name=old_name)
+        for relation in child_relations:
+            relation.child_fe_name = new_name
+            relation.save()
+
+        response = HttpResponse()
+        response.content = "Successfully renamed frame element"
+        response.status_code = 200
+        return response
+    except ValueError as e:
+        response = HttpResponse()
+        response.content = "Encountered error with " + str(e)
+        response.status_code = 500
+        return response
+
+@ensure_csrf_cookie
+def delete_frameelement(request):
+    fe_name = request.POST.get('fe_name')
+    frame_name = request.POST.get('frame_name')
+
+    if(fe_name == 'Self'):
+        response = HttpResponse()
+        response.content = "Cannot delete Self frame element"
+        response.status_code = 400
+        return response
+
+    try:
+        # Check if frame element is involved in subframe relation
+        parent_subfe = FeRelations.objects.filter(parent_fe__frame_name=frame_name,
+                parent_fe_name=fe_name)
+        child_subfe = FeRelations.objects.filter(child_fe__frame_name=frame_name,
+                child_fe_name=fe_name)
+
+        if(len(parent_subfe) > 0 or len(child_subfe) > 0):
+            response = HttpResponse()
+            response.content = "Cannot delete frame element in subframe relation"
+            response.status_code = 400
+            return response
+
+        frame_element = FrameElements.objects.get(fe_name=fe_name, frame_name=frame_name)
+        frame_element.delete()
+
+        response = HttpResponse()
+        response.content = "Successfully deleted frame element"
+        response.status_code = 200
+        return response
+    except ValueError as e:
+        response = HttpResponse()
+        response.content = "Encountered error with " + str(e)
+        repsonse.status_code = 500
+        return response
+
+@ensure_csrf_cookie
+def add_frameelement(request):
+    fe_name = request.POST.get('fe_name')
+    frame_name = request.POST.get('frame_name')
+
+    try:
+        # Check if frame already has frame element with same name
+        fes_with_name = FrameElements.objects.filter(frame_name=frame_name, fe_name=fe_name)
+        if(len(fes_with_name) > 0):
+            response = HttpResponse()
+            response.status_code = 400
+            response.content = "Another frame element already has this name"
+            return response
+
+        frame = Frames.objects.get(name=frame_name)
+        new = FrameElements(frame=frame, frame_name=frame_name, fe_name = fe_name,
+                core_status = "CORE", framenet_id=None)
+        new.save()
+
+        response = HttpResponse()
+        response.content = "Successfully added frame element"
+        response.status_code = 200
+        return response
+    except ValueError as e:
+        response = HttpResponse()
+        response.content = "Encountered error with " + str(e)
+        response.status_code = 500
+        return response
+
 class AnnotationToolView(TemplateView):
    template_name ="base.html"
    

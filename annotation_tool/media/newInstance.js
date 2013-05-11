@@ -137,8 +137,10 @@ function toggleSelectedFrame() {
 
 function createInstance(frameName) {
 
+    var wasNull = false;
     if(frameName == null) {
         frameName = $('.selected').attr('id');
+        wasNull = true;
     }
 
     jQuery.ajax({
@@ -154,7 +156,13 @@ function createInstance(frameName) {
         },
         dataType: 'text',
         success:function(data) {
-            alert(data + '\nYou may now close this window');
+            if(wasNull) {
+                alert(data + '\nYou may now close this window');
+            }
+            else {
+                // Direct to frame editor
+                document.location.href = '/frame_editor?frame_name=' + frameName;
+            }
         },
         error:function(jqXHR, textStatus, errorThrown) {
             alert(jqXHR.status + ', ' + textStatus + ', ' + errorThrown);

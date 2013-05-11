@@ -24,7 +24,11 @@ urlpatterns = patterns('',
     (r'^create_framerelation/.*$', create_framerelation),
     (r'^create_frameelements/.*$', create_frameelements),
     (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT }),
-    (r'^new_instances/.*$', new_instances)
+    (r'^new_instances/.*$', new_instances),
+    (r'^frame_editor/.*$', frame_editor),
+    (r'^rename_frameelement/.*$', rename_frameelement),
+    (r'^delete_frameelement/.*$', delete_frameelement),
+    (r'^add_frameelement/.*$', add_frameelement)
 
     # Examples:
     # url(r'^$', 'myproject.views.home', name='home'),
