@@ -165,6 +165,14 @@ def create_frame(request):
     frameType = request.POST['frameType']
     hasLexicalization = request.POST['hasLexicalization']
     try:
+        # Make sure no frame already has this name
+        framesWithName = Frames.objects.filter(name=name)
+        if(len(framesWithName) > 0):
+            response = HttpResponse()
+            response.status_code = 400
+            response.content = 'Frame with name "' + name + '" already exists'
+            return response
+
         Frames.create(name, frameType, hasLexicalization, None, None, None, None)
         response = HttpResponse()
         response.content = "Successfully created frame"
@@ -369,20 +377,37 @@ def frame_editor(request):
     frame_name = request.GET.get('frame_name')
     frame = Frames.objects.get(name=frame_name)
 
-    childframes = Frames.objects.filter(parent_frame1__parent_frame_name=frame_name,
+    isaChildframes = Frames.objects.filter(parent_frame1__parent_frame_name=frame_name,
             parent_frame1__relation_type="ISA")
-    is_parent = len(childframes) > 0
+    is_ISAparent = len(isaChildframes) > 0
+    
+    subParentframes = Frames.objects.filter(child_frame1__child_frame_name=frame_name,
+            child_frame1__relation_type="SUBFRAME")
+    is_SUBchild = len(subParentframes) > 0
 
     inherited_elements = FrameElements.objects.filter(frame_name=frame_name,
             child_fe__rel_type="ISA")
 
     new_elements = FrameElements.objects.filter(frame_name=frame_name, child_fe=None)
 
+    subframes = Frames.objects.filter(child_frame1__parent_frame_name=frame_name,
+            child_frame1__relation_type="SUBFRAME")
+
+    subelements = []
+
+    for subframe in subframes:
+        fe_relations = FeRelations.objects.filter(parent_frame__name=frame_name,
+                child_frame=subframe)
+        subelements.append(serializers.serialize('json', fe_relations))
+
     data = {
             'frame_name': frame_name,
-            'is_parent': is_parent,
+            'is_ISAparent': is_ISAparent,
+            'is_SUBchild': is_SUBchild,
             'inherited_elements': serializers.serialize('json', inherited_elements),
-            'new_elements': serializers.serialize('json', new_elements)
+            'new_elements': serializers.serialize('json', new_elements),
+            'subframes': serializers.serialize('json', subframes),
+            'subelements': subelements
            }
 
     return render_to_response('frameEditor.html', data)
@@ -493,6 +518,106 @@ def add_frameelement(request):
         response = HttpResponse()
         response.content = "Encountered error with " + str(e)
         response.status_code = 500
+        return response
+
+@ensure_csrf_cookie
+def delete_subframe(request):
+    sf_name = request.POST.get('sf_name')
+    frame_name = request.POST.get('frame_name')
+
+    try:
+        # Delete subframe relation
+        sfToDelete = FrameRelations.objects.get(relation_type="SUBFRAME",
+                parent_frame_name=frame_name, child_frame_name=sf_name)
+        sfToDelete.delete()
+
+        # Delete subframe frame element relations
+        feRelsToDelete = FeRelations.objects.filter(rel_type="SUBFRAME",
+                parent_frame__name=frame_name, child_frame__name=sf_name)
+        
+        for feRel in feRelsToDelete:
+            feRel.delete()
+
+        response = HttpResponse()
+        response.status_code = 200
+        response.content = "Successfully deleted subframe"
+        return response
+    except ValueError as e:
+        response = HttpResponse()
+        response.status_code = 500
+        response.content = "Encountered error with " + str(e)
+        return response
+
+@ensure_csrf_cookie
+def add_subframe(request):
+    sf_name = request.POST.get('sf_name')
+    frame_name = request.POST.get('frame_name')
+    try:
+        # Make sure frame exists with name sf_name
+        subframe = Frames.objects.filter(name=sf_name)
+        if(len(subframe) == 0):
+            response = HttpResponse()
+            response.status_code = 400
+            response.content = "No frame with name " + sf_name + " exists"
+            return response
+
+        subframe = subframe[0]
+        FrameRelations.create(parent_frame_name=frame_name, child_frame_name=sf_name,
+                relation_type="SUBFRAME")
+
+        # Create corresponding frame element relations
+        sf_elements = FrameElements.objects.filter(frame_name=sf_name)
+        parent_element = FrameElements.objects.filter(frame_name=frame_name)[0]
+
+        for element in sf_elements:
+            if(element.fe_name != 'Self'):
+                FeRelations.create(parent_fe_name=parent_element.fe_name,
+                        child_fe_name=element.fe_name, parent_frame_name=frame_name,
+                        child_frame_name=sf_name, rel_type="SUBFRAME")
+
+        response = HttpResponse()
+        response.status_code = 200
+        response.content = "Successfully added subframe"
+        return response
+    except ValueError as e:
+        response = HttpResponse()
+        response.status_code = 500
+        response.content = "Encountered error with " + str(e)[:200]
+        return response
+
+@ensure_csrf_cookie
+def update_sfel_relations(request):
+    sf_name = request.POST.get('sf_name')
+    frame_name = request.POST.get('frame_name')
+    parent_fes_string = request.POST.get('parent_fes')
+    child_fes_string = request.POST.get('child_fes')
+
+    parent_fes = json.loads(parent_fes_string)
+    child_fes = json.loads(child_fes_string)
+
+    try:
+        size = len(parent_fes)
+        for i in range(size):
+            parent = parent_fes[i]
+            child = child_fes[i]
+
+            relation = FeRelations.objects.get(parent_frame__name=frame_name,
+                    child_frame__name=sf_name, rel_type="SUBFRAME", child_fe_name=child)
+
+            frame_element = FrameElements.objects.get(frame_name=frame_name, fe_name=parent)
+
+            relation.parent_fe = frame_element
+            relation.parent_fe_name = parent
+            relation.save()
+
+        response = HttpResponse()
+        response.status_code = 200
+        response.content = "Successfully updated frame element relations"
+        return response
+    except ValueError as e:
+        response = HttpResponse()
+        response.status_code = 500
+        response.content = "Encountered error with " + str(e)[:200]
         return response
 
 class AnnotationToolView(TemplateView):

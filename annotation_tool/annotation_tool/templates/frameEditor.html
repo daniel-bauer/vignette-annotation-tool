@@ -10,9 +10,16 @@
 
         <script type="text/javascript">
             var frameName = '{{frame_name}}';
-            var isParent = '{{is_parent}}';
+            var isISAparent = '{{is_ISAparent}}';
+            var isSUBchild = '{{is_SUBchild}}';
             var inheritedElements = {{inherited_elements|safe}};
             var newElements = {{new_elements|safe}};
+            var subframes = {{subframes|safe}};
+
+            var subelements = {{subelements|safe}};
+            for(var i = 0; i < subelements.length; i++) {
+                subelements[i] = jQuery.parseJSON(subelements[i]);
+            }
         </script>
     </head>
     <body>
@@ -53,13 +60,18 @@
                 <ul id="subframes">
                 </ul>
 
-                <ul class="buttonlist">
+                <ul id="sfbuttons" class="buttonlist">
                     <li>
                         <button id="sdel" type="button" onClick="subframeDel();">Delete</button>
                     </li>
 
                     <li>
                         <button id="sadd" type="button" onClick="subframeAdd();">Add</button>
+                    </li>
+                    <li>
+                        <button id="saverel" type="button" onClick="saveSFRel();">
+                            Save frame element assignments
+                        </button>
                     </li>
                 </ul>
             </div>

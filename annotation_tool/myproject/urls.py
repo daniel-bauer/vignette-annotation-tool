@@ -28,7 +28,10 @@ urlpatterns = patterns('',
     (r'^frame_editor/.*$', frame_editor),
     (r'^rename_frameelement/.*$', rename_frameelement),
     (r'^delete_frameelement/.*$', delete_frameelement),
-    (r'^add_frameelement/.*$', add_frameelement)
+    (r'^add_frameelement/.*$', add_frameelement),
+    (r'^delete_subframe/.*$', delete_subframe),
+    (r'^add_subframe/.*$', add_subframe),
+    (r'^update_sfel_relations/.*$', update_sfel_relations)
 
     # Examples:
     # url(r'^$', 'myproject.views.home', name='home'),

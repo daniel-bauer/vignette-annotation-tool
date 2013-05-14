@@ -180,8 +180,13 @@ function createFrame() {
     }
 
     var errorfunc = function(jqXHR, textStatus, errorThrown) {
+        if(jqXHR.status = 400) {
+            alert(jqXHR.responseText);
+        }
+        else {
             alert(this.url + ', ' + jqXHR.status + ', ' + textStatus + ', ' + errorThrown);
         }
+    }
 
     // Create frame 
     jQuery.ajax({url: '/create_frame/', type: 'POST', dataType: 'text',

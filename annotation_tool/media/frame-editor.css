@@ -12,8 +12,8 @@ h1, h2, h3 {
 
 .mainlist {
     text-align: center;
-    width: 50%;
     float: left;
+    width: 50%;
 }
 
 .sublist {
@@ -40,6 +40,20 @@ ul {
     margin-left: 1em;
     font-family: Helvetica;
     font-size: .95em;
+}
+
+#subframes {
+    text-align: left;
+    margin-left: 10%;
+}
+
+.suboption {
+    margin-bottom: 1em;
+}
+
+.sfrels li {
+    display: inline-block;
+    margin: 0 .5em;
 }
 
 div[id*='rename_'] {
