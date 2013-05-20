@@ -13,15 +13,24 @@ $(document).ready(function() {
         opener.onPopupClose();
     });
 
-    csrfProtect();
+    csrfProtect();  // for post requests
     populateFrameList();
     toggleDetails();
     toggleSelectedFrame();
 });
 
+function errorFunc(jqXHR, textStatus, errorThrown) {
+    if(jqXHR.status = 400) {
+        alert(jqXHR.responseText);
+    }
+    else {
+        alert(this.url + ', ' + jqXHR.status + ', ' + textStatus + ', ' + errorThrown);
+    }
+}
+
+// Fill list of frames
 function populateFrameList() {
     var frameList = $('#frame-list');
-    var first = true; 
     for(var i = 0; i < results.length; i++) {
         var value = results[i];
         var fes = resultFEs[i];
@@ -39,7 +48,7 @@ function populateFrameList() {
         
         // Give frame topframe class if it is the first item
         var fclass = '"';
-        if(first) {
+        if(i == 0) {
             fclass = ' topframe"';
             first = false;
         }
@@ -47,11 +56,16 @@ function populateFrameList() {
         var newItem = '<li class="frame' + fclass + ' id=' +  value.fields.name + '>';
         newItem = newItem + text + data +  '</div></li>';
         frameList.append(newItem);
+        
+        // Hide data (so that it is revealed on click)
         frameList.find('>:last-child .data').hide();
     };
 }
 
+// String of data about frame, revealed on click
 function makeDataString(value, fes, sfs, parentframe) {
+    
+    // Frame element information
     var fetext = '';
     if(fes.length != 0) {
         fetext = '<p>Frame elements: ';
@@ -62,6 +76,7 @@ function makeDataString(value, fes, sfs, parentframe) {
         fetext = fetext + '</p>';
     }
     
+    // Subframe information
     var sftext = '';
     if(sfs.length != 0) {
         sftext = '<p>Subframes: ';
@@ -72,6 +87,7 @@ function makeDataString(value, fes, sfs, parentframe) {
         sftext = sftext + '</p>';
     }
 
+    // Inheritance information
     var ptext = '';
     if(parentframe != '') {
         ptext = '<p>Inherits from: ' + parentframe[0].fields.name + '</p>';
@@ -80,18 +96,23 @@ function makeDataString(value, fes, sfs, parentframe) {
     return fetext + sftext + ptext
 }
 
+// Reveal selected information, hide previously selected information
 function toggleDetails() {
-    var expandedFrameID = '';
+    var expandedFrameID = ''; 
+
     $('#frame-list').on('click', '.frame', function() {
+        // toggledetails prevents selecting frame from also hiding/expanding details
         if(toggledetails) {
             toToggle = $(this).find('.data');
             toToggle.toggle();
             var toggleID = $(this).attr('id');
             
+            // Unexpand previously expanded frame
             if(expandedFrameID != '') {
                 var unexpanded = $('#frame-list li#' + expandedFrameID);
                 unexpanded.find('.data').hide();
                 
+                // Set currently expanded frame ID if new frame is expanded
                 if(toggleID == unexpanded.attr('id')) {
                     expandedFrameID = '';
                 }
@@ -109,15 +130,20 @@ function toggleDetails() {
     });
 }
 
+// Make new frame selected, previous frame unselected
 function toggleSelectedFrame() {
     var selectedFrameID = '';
+
     $('#frame-list').on('click', '.select', function() {
+        // toggledetails prevents selecting frame from also hiding/expanding details
+        // Assumes selection toggle is first in order of "on click" calls
         toggledetails = false;
 
         toToggle = $(this).parent();
         toToggle.toggleClass('selected');
         var toggleID = toToggle.attr('id');
         
+        // Same logic as toggleExpandedFrame
         if(selectedFrameID != '') {
             var unselected = $('#frame-list li#' + selectedFrameID);
             unselected.removeClass('selected');
@@ -135,8 +161,11 @@ function toggleSelectedFrame() {
     });
 }
 
+// ajax request for creating new instance
 function createInstance(frameName) {
 
+    // Determines which success function to use
+    // Depends on whether or not user is extending a frame
     var wasNull = false;
     if(frameName == null) {
         frameName = $('.selected').attr('id');
@@ -164,31 +193,29 @@ function createInstance(frameName) {
                 document.location.href = '/frame_editor?frame_name=' + frameName;
             }
         },
-        error:function(jqXHR, textStatus, errorThrown) {
-            alert(jqXHR.status + ', ' + textStatus + ', ' + errorThrown);
-        }
+        error: errorFunc
     });
 }
 
+// ajax requests for creating a frame if user extended frame
 function createFrame() {
-    parentFrameName = $('.selected').attr('id');
-    frameName = $('input[name="frame_name"]').attr('value');
+    var parentFrameName = $('.selected').attr('id');
 
-    hasLexicalization = 1;
+    // Ensure a frame is selected
+    if(parentFrameName == null) {
+        alert('Please select a frame');
+        return;
+    }
+
+    var frameName = $('input[name="frame_name"]').attr('value');
+
+    var hasLexicalization = 1;
     if(word == '') {
         hasLexicalization = 0;
     }
 
-    var errorfunc = function(jqXHR, textStatus, errorThrown) {
-        if(jqXHR.status = 400) {
-            alert(jqXHR.responseText);
-        }
-        else {
-            alert(this.url + ', ' + jqXHR.status + ', ' + textStatus + ', ' + errorThrown);
-        }
-    }
-
-    // Create frame 
+    // Each step in creating inheritance waits for success of previous step
+    // Create frame
     jQuery.ajax({url: '/create_frame/', type: 'POST', dataType: 'text',
         data:
         {
@@ -196,7 +223,7 @@ function createFrame() {
             frameType: 'USER_MADE',
             hasLexicalization: hasLexicalization
         },
-        error: errorfunc,
+        error: errorFunc,
         success: function(data) {
 
             // Create frame relation
@@ -207,17 +234,17 @@ function createFrame() {
                     parentFrameName: parentFrameName,
                     relationType: 'ISA'
                 },
-                error: errorfunc,
+                error: errorFunc,
                 success: function(data) {
 
-                    // Create frame elements and fe relationships
+                    // Create frame elements and frame element relationships
                     jQuery.ajax({url: '/create_frameelements/', type: 'POST', dataType: 'text',
                         data:
                         {
                             frameName: frameName,
                             parentFrameName: parentFrameName
                         },
-                        error: errorfunc,
+                        error: errorFunc,
                         success: function(data) {
                             createInstance(frameName);
                         }
@@ -226,4 +253,14 @@ function createFrame() {
             });
         }
     });
+}
+
+function editFrame() {
+    frameName = $('.selected').attr('id');
+    if(frameName == null) {
+        alert('Please select a frame');
+    }
+    else {
+        document.location.href = '/frame_editor?frame_name=' + frameName;
+    }
 }

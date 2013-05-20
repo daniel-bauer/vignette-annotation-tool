@@ -5,11 +5,12 @@ $(document).ready(function() {
         opener.onPopupClose();
     });
 
-    csrfProtect();
+    csrfProtect();  // for post requests
     addButtons();
     addFrameDetails();
 });
 
+// Error function used in all ajax requests
 function errorFunc(jqXHR, textStatus, errorThrown) {
     if(jqXHR.status = 400) {
         alert(jqXHR.responseText);
@@ -19,7 +20,7 @@ function errorFunc(jqXHR, textStatus, errorThrown) {
     }
 }
 
-
+// Add buttons whose functions are allowed for current frame
 function addButtons() {
     if(isISAparent == 'True') {
         var warning = '<p>Cannot add/delete frame elements from parent of another frame</p>';
@@ -38,34 +39,43 @@ function addButtons() {
     }
 }
 
+// Main function for adding frame element and subframe lists
 function addFrameDetails() {
+    // Add frame elements in inherited frame element list
     $.each(inheritedElements, function(index, fe) {
         var option = createOption(fe.fields.fe_name, 'inherited', index == 0);
         $('#inherited').append(option);
     });
 
+    // Add frame elements in new (uninherited) frame element list
     $.each(newElements, function(index, fe) {
         var option = createOption(fe.fields.fe_name, 'new', index == 0);
         $('#new').append(option);
     });
 
+    // Add subframes
     for(var i = 0; i < subframes.length; i++) {
         var subframe = createSubframe(subframes[i].fields.name, subelements[i], i == 0);
         $('#subframes').append(subframe);
     }
 }
 
+// Create frame element option for frame elements list
 function createOption(fe_name, op_name, checked) {
     var option = '<li><input type="radio" name="' + op_name + '"';
+
+    // Automatically check first option
     if(checked) {
         option = option + ' checked';
     }
+
     option = option + ' value="' + fe_name + '"><span class="rcontent">';
     option = option + fe_name + '</span></input></li>';
 
     return option;
 }
 
+// Create subframe option in subframe list
 function createSubframe(name, relations, checked) {
     var subframe = '<li class="suboption"><input type="radio" name="subframe" value="' + name + '"';
     if(checked) {
@@ -74,6 +84,7 @@ function createSubframe(name, relations, checked) {
     subframe = subframe + '/> ' + name;
     var sfrels = '<ul class="sfrels">';
 
+    // Add frame element relation selections
     $.each(relations, function(index, relation) {
         var pname = relation.fields.parent_fe_name;
         var cname = relation.fields.child_fe_name;
@@ -89,6 +100,7 @@ function createSubframe(name, relations, checked) {
     return subframe;
 }
 
+// Return all options of frame element select, with given option selected
 function generateOptions(selected) {
    var frameElements = newElements.concat(inheritedElements);
    var options = '';
@@ -106,6 +118,7 @@ function generateOptions(selected) {
    return options;
 }
 
+// Create text box and button for renaming frame element
 function rename(op_name) {
     var fe_item = $('.sublist input[name=' + op_name + ']:checked');
 
@@ -123,6 +136,7 @@ function rename(op_name) {
     fe_item.parents().eq(2).append(toAppend);
 }
 
+// ajax request to rename frame element and refresh page
 function saveRN(fe_name, op_name) {
     var new_name = $('input[name=r' + op_name + ']').attr('value');
     jQuery.ajax({url: '/rename_frameelement/', type: 'POST', dataType: 'text',
@@ -138,6 +152,7 @@ function saveRN(fe_name, op_name) {
     });
 }
 
+// ajax request to delete frame element and refresh page
 function feDel() {
     var fe_item = $('.sublist input[name=new]:checked');
     var fe_name = fe_item.attr('value');
@@ -154,6 +169,7 @@ function feDel() {
     });
 }
 
+// Create text box and button to add new frame element with given name
 function feAdd() {
     $('#nadd').hide();
 
@@ -165,6 +181,7 @@ function feAdd() {
     $('#newlist').append(toAppend);
 }
 
+// ajax request to add frame element and refresh page
 function saveAdd() {
     var name = $('#newlist input[name="addnew"]').attr('value');
     jQuery.ajax({url: '/add_frameelement/', type: 'POST', dataType: 'text',
@@ -179,6 +196,7 @@ function saveAdd() {
     });
 }
 
+// ajax request to delete subframe and refresh page
 function subframeDel() {
     var sf_item = $('#subframes input[name=subframe]:checked');
     var sf_name = sf_item.attr('value');
@@ -195,6 +213,7 @@ function subframeDel() {
     });
 }
 
+// Create text box and button to add subframe
 function subframeAdd() {
     $('#sadd').hide();
 
@@ -205,6 +224,7 @@ function subframeAdd() {
     $('#sfbuttons').append(toAppend);
 }
 
+// ajax request to add subframe and refresh page
 function saveSF() {
     var name = $('#sfbuttons input[name="addsf"]').attr('value');
     jQuery.ajax({url: '/add_subframe/', type: 'POST', dataType: 'text',
@@ -219,12 +239,14 @@ function saveSF() {
     });
 }
 
+// ajax request to save changes to frame element assignments for selected subframe
 function saveSFRel() {
     var checked = '#subframes input[name=subframe]:checked';
     var name = $(checked).attr('value');
     var parent_fes = new Array();
     var child_fes = new Array();
 
+    // Fill coresponding arrays with names of frame elements in assignments
     var list = $(checked).parent().find(' .sfrels li');
     list.each(function(index) {
         var pname = $(this).find('select').attr('value');

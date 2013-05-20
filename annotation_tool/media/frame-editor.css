@@ -68,4 +68,5 @@ div[id*='rename_'] {
 
 button {
     margin: .5em;
+    width: 10em;
 }

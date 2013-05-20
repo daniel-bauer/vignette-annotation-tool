@@ -6,6 +6,7 @@ from django.template.loader import render_to_string
 from models import *
 from django.http import HttpResponse
 from django.core import serializers
+from django.db.models import Q
 import json
 import pprint
 import pygraphviz as pgv
@@ -137,93 +138,6 @@ def get_inherits_element_from(request):
     print inheritance_json
     return HttpResponse(json.dumps(inheritance_json))
 
-# Creates new instances in the new window that is opened
-@ensure_csrf_cookie
-def create_instances(request):
-    sceneId = request.POST['sceneId']
-    corpusId = request.POST['corpusId']
-    word = request.POST['word']
-    wordPosition = request.POST['wordPosition']
-    name = request.POST['name']
-    sentenceId = request.POST['sentenceId']
-    try:
-        Instances.create(name, word, wordPosition, int(sceneId), int(sentenceId), int(corpusId))
-        response = HttpResponse()
-        response.content = "Successfully created instance"
-        response.status_code = 200
-        return response
-    except ValueError as e:
-        response = HttpResponse()
-        response.content = "Encountered error with " + str(e)
-        response.status_code = 500
-        return response
-
-# Creates frame for when user inherits from old frame
-@ensure_csrf_cookie
-def create_frame(request):
-    name = request.POST['name']
-    frameType = request.POST['frameType']
-    hasLexicalization = request.POST['hasLexicalization']
-    try:
-        # Make sure no frame already has this name
-        framesWithName = Frames.objects.filter(name=name)
-        if(len(framesWithName) > 0):
-            response = HttpResponse()
-            response.status_code = 400
-            response.content = 'Frame with name "' + name + '" already exists'
-            return response
-
-        Frames.create(name, frameType, hasLexicalization, None, None, None, None)
-        response = HttpResponse()
-        response.content = "Successfully created frame"
-        response.status_code = 200
-        return response
-    except ValueError as e:
-        response = HttpResponse()
-        response.content = "Encountered error with " + str(e)
-        response.status_code = 500
-        return response
-
-# Creates inheritance relation when user inherints from old frame
-@ensure_csrf_cookie
-def create_framerelation(request):
-    parentFrameName = request.POST['parentFrameName']
-    frameName = request.POST['frameName']
-    relationType = request.POST['relationType']
-    try:
-        FrameRelations.create(parentFrameName, frameName, relationType)
-        response = HttpResponse()
-        response.content = "Successfully created frame relation"
-        response.status_code = 200
-        return response
-    except ValueError as e:
-        response = HttpResponse()
-        response.content = "Encountered error with " + str(e)
-        response.status_code = 500
-        return response
-
-# Creates all frame elements for inherited frame
-@ensure_csrf_cookie
-def create_frameelements(request):
-    frameName = request.POST['frameName']
-    parentFrameName = request.POST['parentFrameName']
-    elements = FrameElements.objects.filter(frame_name = parentFrameName);
-    for element in elements:
-        try:
-            fename = element.fe_name
-            FrameElements.create(frameName, fename, element.core_status, None)
-            FeRelations.create(fename, fename, parentFrameName, frameName, "ISA")
-        except ValueError as e:
-            response = HttpResponse()
-            response.content = "Encountered error with " + str(e)
-            response.status_code = 500
-            return response
-
-    response = HttpResponse()
-    response.content = "Successfully added frame elements and relations"
-    response.status_code = 200
-    return response
-
 def create_graph(request):
    scene_id = request.GET.get('scene_id')
    corpus_id = request.GET.get('corpus_id')
@@ -307,36 +221,6 @@ def get_related_frames_for_selected_instance(instance_name,scene_id,corpus_id,ad
    adjacency_list_for_graph[instance_name] = adj_list_for_instance
    return adjacency_list_for_graph,constituent_instance
 
-# Retrieve frame search data from server
-def search(searchType, query):
-   # TODO:
-   # will duplicates be successfully removed?
-   querylist = []
-   for ltype in lemmaTypes:
-       querylist.append(lemmatizer.process_word(query, ltype))
-
-   results = []
-   if searchType == 'name':
-       for lquery in querylist:
-           results += Frames.objects.filter(name__icontains=lquery)
-   elif searchType == 'lexicalization':
-       for lquery in querylist:
-           results += Frames.objects.filter(lexicalunit__word__icontains=lquery)
-   elif searchType == 'keyword':
-       for lquery in querylist:
-           results += Frames.objects.filter(framekeyword__keyword__icontains=lquery)
-   elif searchType == 'dobj':
-       for lquery in querylist:
-           results += Frames.objects.filter(framekeyword__keyword__icontains=lquery, framekeyword__relation='dobj')
-   elif searchType == 'nsubj':
-       for lquery in querylist:
-           results += Frames.objects.filter(framekeyword__keyword__icontains=lquery, framekeyword__relation='nsubj')
-   elif searchType == 'prep':
-       for lquery in querylist:
-           results += Frames.objects.filter(framekeyword__keyword__icontains=lquery, framekeyword__relation='prep')
-
-   return list(set(results))    # delete duplicates
-
 # Open a new window where the new instance can be created
 def new_instances(request):
    scene_id = request.GET.get('scene_id')
@@ -372,29 +256,169 @@ def new_instances(request):
     
    return render_to_response('newInstance.html',{'scene_id':scene_id,'corpus_id':corpus_id,'sentence_id':sentence_id,'word':word,'word_position':word_position,'results':results_json,'resultFEs':resultFEs,'subframes':subframes,'parentframes':parentframes})
 
+# Return results from frame search
+def search(searchType, query):
+   # TODO:
+   # Ensure duplicates are successfully removed (needs larger data sets to test)
+
+   # Build list of lemmatized versions of query
+   querylist = []
+   for ltype in lemmaTypes:
+       querylist.append(lemmatizer.process_word(query, ltype))
+
+    # Get results for appropriate search type using each lemmatization of the query
+   results = []
+   if searchType == 'name':
+       for lquery in querylist:
+           results += Frames.objects.filter(name__icontains=lquery)
+   elif searchType == 'lexicalization':
+       for lquery in querylist:
+           results += Frames.objects.filter(lexicalunit__word__icontains=lquery)
+   elif searchType == 'keyword':
+       for lquery in querylist:
+           results += Frames.objects.filter(framekeyword__keyword__icontains=lquery)
+   elif searchType == 'dobj':
+       for lquery in querylist:
+           results += Frames.objects.filter(framekeyword__keyword__icontains=lquery, framekeyword__relation='dobj')
+   elif searchType == 'nsubj':
+       for lquery in querylist:
+           results += Frames.objects.filter(framekeyword__keyword__icontains=lquery, framekeyword__relation='nsubj')
+   elif searchType == 'prep':
+       for lquery in querylist:
+           results += Frames.objects.filter(framekeyword__keyword__icontains=lquery, framekeyword__relation='prep')
+
+   return list(set(results))    # delete duplicates
+
+# Create new instance in instance creation window
+@ensure_csrf_cookie
+def create_instances(request):
+
+    name = request.POST.get('name')
+    # Ensure user selects a frame
+    if not name:
+        response = HttpResponse()
+        response.status_code = 400
+        response.content = "Please select a frame"
+        return response
+
+    sceneId = request.POST['sceneId']
+    corpusId = request.POST['corpusId']
+    word = request.POST['word']
+    wordPosition = request.POST['wordPosition']
+    sentenceId = request.POST['sentenceId']
+    try:
+        Instances.create(name, word, wordPosition, int(sceneId), int(sentenceId), int(corpusId))
+        response = HttpResponse()
+        response.content = "Successfully created instance"
+        response.status_code = 200
+        return response
+    except ValueError as e:
+        response = HttpResponse()
+        response.content = "Encountered error with " + str(e)
+        response.status_code = 500
+        return response
+
+# Create new frame if user inherits from existing frame when creating instance
+@ensure_csrf_cookie
+def create_frame(request):
+    name = request.POST.get('name')
+    # Ensure user enters a valid name
+    if name.replace(' ', '') == '':
+        response = HttpResponse()
+        response.status_code = 400
+        response.content = "Please enter a valid name"
+        return response
+
+    frameType = request.POST['frameType']
+    hasLexicalization = request.POST['hasLexicalization']
+    try:
+        # Make sure no frame already has this name
+        framesWithName = Frames.objects.filter(name=name)
+        if(len(framesWithName) > 0):
+            response = HttpResponse()
+            response.status_code = 400
+            response.content = 'Frame with name "' + name + '" already exists'
+            return response
+
+        Frames.create(name, frameType, hasLexicalization, None, None, None, None)
+        response = HttpResponse()
+        response.content = "Successfully created frame"
+        response.status_code = 200
+        return response
+    except ValueError as e:
+        response = HttpResponse()
+        response.content = "Encountered error with " + str(e)
+        response.status_code = 500
+        return response
+
+# Creates inheritance relation when user inherints from old frame
+@ensure_csrf_cookie
+def create_framerelation(request):
+    parentFrameName = request.POST['parentFrameName']
+    frameName = request.POST['frameName']
+    relationType = request.POST['relationType']
+    try:
+        FrameRelations.create(parentFrameName, frameName, relationType)
+        response = HttpResponse()
+        response.content = "Successfully created frame relation"
+        response.status_code = 200
+        return response
+    except ValueError as e:
+        response = HttpResponse()
+        response.content = "Encountered error with " + str(e)
+        response.status_code = 500
+        return response
+
+# Creates new frame elements and frame element relations for inheritance
+@ensure_csrf_cookie
+def create_frameelements(request):
+    frameName = request.POST['frameName']
+    parentFrameName = request.POST['parentFrameName']
+
+    # List of parent frame's frame elements
+    elements = FrameElements.objects.filter(frame_name = parentFrameName);
+    for element in elements:
+        try:
+            fename = element.fe_name
+            FrameElements.create(frameName, fename, element.core_status, None)
+            FeRelations.create(fename, fename, parentFrameName, frameName, "ISA")
+        except ValueError as e:
+            response = HttpResponse()
+            response.content = "Encountered error with " + str(e)
+            response.status_code = 500
+            return response
+
+    response = HttpResponse()
+    response.content = "Successfully added frame elements and relations"
+    response.status_code = 200
+    return response
+
 # A new page for editing frames
 def frame_editor(request):
     frame_name = request.GET.get('frame_name')
     frame = Frames.objects.get(name=frame_name)
 
+    # Determine if frame is parent in ISA relation
     isaChildframes = Frames.objects.filter(parent_frame1__parent_frame_name=frame_name,
             parent_frame1__relation_type="ISA")
     is_ISAparent = len(isaChildframes) > 0
     
+    # Determine if frame is child in SUBFRAME relation
     subParentframes = Frames.objects.filter(child_frame1__child_frame_name=frame_name,
             child_frame1__relation_type="SUBFRAME")
     is_SUBchild = len(subParentframes) > 0
 
+    # Inherited and new (uninherited) frame elements for frame
     inherited_elements = FrameElements.objects.filter(frame_name=frame_name,
             child_fe__rel_type="ISA")
+    new_elements = FrameElements.objects.filter(~Q(child_fe__rel_type="ISA"), frame_name=frame_name)
 
-    new_elements = FrameElements.objects.filter(frame_name=frame_name, child_fe=None)
-
+    # Get list of subframes of frame
     subframes = Frames.objects.filter(child_frame1__parent_frame_name=frame_name,
             child_frame1__relation_type="SUBFRAME")
 
+    # Make list of subframe frame elements with indices corresponding to subframes
     subelements = []
-
     for subframe in subframes:
         fe_relations = FeRelations.objects.filter(parent_frame__name=frame_name,
                 child_frame=subframe)
@@ -412,12 +436,14 @@ def frame_editor(request):
 
     return render_to_response('frameEditor.html', data)
 
+# Rename frame element in frame editor
 @ensure_csrf_cookie
 def rename_frameelement(request):
     old_name = request.POST.get('old_name')
     new_name = request.POST.get('new_name')
     frame_name = request.POST.get('frame_name')
 
+    # Don't allow user to rename Self frame element
     if(old_name == 'Self'):
         response = HttpResponse()
         response.status_code = 400
@@ -454,11 +480,13 @@ def rename_frameelement(request):
         response.status_code = 500
         return response
 
+# Delete frame element in frame editor
 @ensure_csrf_cookie
 def delete_frameelement(request):
     fe_name = request.POST.get('fe_name')
     frame_name = request.POST.get('frame_name')
 
+    # Don't allow user to delete Self frame element
     if(fe_name == 'Self'):
         response = HttpResponse()
         response.content = "Cannot delete Self frame element"
@@ -491,13 +519,14 @@ def delete_frameelement(request):
         repsonse.status_code = 500
         return response
 
+# Add frame element in frame editor
 @ensure_csrf_cookie
 def add_frameelement(request):
     fe_name = request.POST.get('fe_name')
     frame_name = request.POST.get('frame_name')
 
     try:
-        # Check if frame already has frame element with same name
+        # Check if this frame already has frame element with same name
         fes_with_name = FrameElements.objects.filter(frame_name=frame_name, fe_name=fe_name)
         if(len(fes_with_name) > 0):
             response = HttpResponse()
@@ -520,6 +549,7 @@ def add_frameelement(request):
         response.status_code = 500
         return response
 
+# Delete subframe relation in frame editor
 @ensure_csrf_cookie
 def delete_subframe(request):
     sf_name = request.POST.get('sf_name')
@@ -531,10 +561,9 @@ def delete_subframe(request):
                 parent_frame_name=frame_name, child_frame_name=sf_name)
         sfToDelete.delete()
 
-        # Delete subframe frame element relations
+        # Delete frame element relations
         feRelsToDelete = FeRelations.objects.filter(rel_type="SUBFRAME",
                 parent_frame__name=frame_name, child_frame__name=sf_name)
-        
         for feRel in feRelsToDelete:
             feRel.delete()
 
@@ -548,6 +577,7 @@ def delete_subframe(request):
         response.content = "Encountered error with " + str(e)
         return response
 
+# Create subframe relation in frame editor
 @ensure_csrf_cookie
 def add_subframe(request):
     sf_name = request.POST.get('sf_name')
@@ -561,7 +591,6 @@ def add_subframe(request):
             response.content = "No frame with name " + sf_name + " exists"
             return response
 
-        subframe = subframe[0]
         FrameRelations.create(parent_frame_name=frame_name, child_frame_name=sf_name,
                 relation_type="SUBFRAME")
 
@@ -570,6 +599,7 @@ def add_subframe(request):
         parent_element = FrameElements.objects.filter(frame_name=frame_name)[0]
 
         for element in sf_elements:
+            # "Self" frame element not a part of subframe relation
             if(element.fe_name != 'Self'):
                 FeRelations.create(parent_fe_name=parent_element.fe_name,
                         child_fe_name=element.fe_name, parent_frame_name=frame_name,
@@ -585,6 +615,7 @@ def add_subframe(request):
         response.content = "Encountered error with " + str(e)[:200]
         return response
 
+# Save changes to frame element assignments in frame editor
 @ensure_csrf_cookie
 def update_sfel_relations(request):
     sf_name = request.POST.get('sf_name')
@@ -592,10 +623,12 @@ def update_sfel_relations(request):
     parent_fes_string = request.POST.get('parent_fes')
     child_fes_string = request.POST.get('child_fes')
 
+    # Arrays of frame element names of frames involved in relation
     parent_fes = json.loads(parent_fes_string)
     child_fes = json.loads(child_fes_string)
 
     try:
+        # Update each frame element relation
         size = len(parent_fes)
         for i in range(size):
             parent = parent_fes[i]

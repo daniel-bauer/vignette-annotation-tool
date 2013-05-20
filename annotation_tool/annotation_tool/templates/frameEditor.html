@@ -16,6 +16,7 @@
             var newElements = {{new_elements|safe}};
             var subframes = {{subframes|safe}};
 
+            // Parse array of arrays
             var subelements = {{subelements|safe}};
             for(var i = 0; i < subelements.length; i++) {
                 subelements[i] = jQuery.parseJSON(subelements[i]);
@@ -70,7 +71,7 @@
                     </li>
                     <li>
                         <button id="saverel" type="button" onClick="saveSFRel();">
-                            Save frame element assignments
+                            Save selected frame element assignments
                         </button>
                     </li>
                 </ul>
