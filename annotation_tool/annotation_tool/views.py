@@ -231,12 +231,14 @@ def new_instances(request):
    searchType = request.GET.get('search-type')
    query = request.GET.get('query')
 
+   # Display first 100 frames as default if no search is made
    results = []
    if(searchType == None or query == ''):
        results = Frames.objects.all()[:100];
    else:
        results = search(searchType, query)
 
+   # Lists containing subframes, frame elements, and parent frames corresponding to results list
    resultFEs = []
    subframes = []
    parentframes = []
@@ -259,7 +261,7 @@ def new_instances(request):
 # Return results from frame search
 def search(searchType, query):
    # TODO:
-   # Ensure duplicates are successfully removed (needs larger data sets to test)
+   # Ensure duplicates are successfully removed
 
    # Build list of lemmatized versions of query
    querylist = []

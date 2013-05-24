@@ -133,7 +133,7 @@ function rename(op_name) {
 
     var toAppend = '<div id="rename_' + op_name + '">' + textbox + button + '</div>';
 
-    fe_item.parents().eq(2).append(toAppend);
+    $('#' + op_name + 'list').append(toAppend);
 }
 
 // ajax request to rename frame element and refresh page

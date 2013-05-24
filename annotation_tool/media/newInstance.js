@@ -19,6 +19,7 @@ $(document).ready(function() {
     toggleSelectedFrame();
 });
 
+// Error function for ajax requests
 function errorFunc(jqXHR, textStatus, errorThrown) {
     if(jqXHR.status = 400) {
         alert(jqXHR.responseText);
@@ -57,7 +58,7 @@ function populateFrameList() {
         newItem = newItem + text + data +  '</div></li>';
         frameList.append(newItem);
         
-        // Hide data (so that it is revealed on click)
+        // Hide data (to be revealed on click)
         frameList.find('>:last-child .data').hide();
     };
 }
